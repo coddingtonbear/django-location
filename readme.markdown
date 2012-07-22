@@ -42,6 +42,13 @@ You can either install from pip:
     cd django-location
     python setup.py install
 
+You'll want to add both django-social-auth and django-location to your project's `urls.py`; you can technically use whatever URL you'd like, but for the purposes of the instructions below, we'll expect that you'll add them like:
+
+    *other url patterns*
+    url(r'^location/', include('zhiznmoya.location.urls')),
+    url(r'', include('social_auth.urls')),
+    *other url patterns*
+
 Consuming Foursquare Information
 --------------------------------
 
