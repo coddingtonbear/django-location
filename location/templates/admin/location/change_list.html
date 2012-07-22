@@ -1,0 +1,9 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools-items %}
+    {% load url from future %}
+    <li>
+        <a href="{% url 'admin:location_configure_accounts' %}">Configure Accounts</a>
+    </li>
+    {{ block.super }}
+{% endblock %}

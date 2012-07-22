@@ -8,9 +8,10 @@ This Django application will consume location information provided by Foursquare
 Requirements
 ------------
 
-* Django 1.4 or greater
+* Django 1.3 or greater
     * Django must also be using a [GIS-capable database backend](https://docs.djangoproject.com/en/dev/ref/contrib/gis/db-api/#spatial-backends) like PostGIS.
 * django-social-auth (for OAuth keys used for communicating with Google Latitude and Foursquare)
+* pytz
 
 ### Recommended
 
@@ -47,8 +48,8 @@ You'll want to add both django-social-auth and django-location to your project's
     url(r'^location/', include('location.urls')),
     url(r'', include('social_auth.urls')),
 
-Consuming Foursquare Information
---------------------------------
+Consuming Foursquare Check-ins
+------------------------------
 
 Foursquare has options in its consumer settings to allow it to instantly post check-in information to an API endpoint that this application provides.
 To support that, you'll need to do the following:
@@ -62,7 +63,7 @@ To support that, you'll need to do the following:
         FOURSQUARE_CONSUMER_KEY = "THECLIENTIDYOUJUSTGENERATED"
         FOURSQUARE_CONSUMER_SECRET  = "THECLIENTSECRETYOUJUSTGENERATED"
 
-3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/location/configuration/') while logged-in to the admin, and click on the 'Configure Foursquare' link.  This will bring you to Foursquare's site using your configured options, and authorize your web application to receive check-ins from the user with which you log-into Foursquare.
+3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/admin/location/locationsource/configure-accounts/') while logged-in to the admin, and click on the 'Authorize Foursquare' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to receive check-ins from the user with which you log-into Foursquare.
 3. If everything is set-up, you shouldn't need to do anything more, but Twitter does offer a 'Send a test push' button on their consumer console that you can use to verify that everything is properly connected.
 
 Consuming Google Latitude Information
@@ -86,13 +87,13 @@ Google Latitude provides a RESTful interface for gathering a user's most recentl
         GOOGLE_OAUTH_EXTRA_SCOPE = ["https://www.googleapis.com/auth/latitude.all.best"]
         GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 
-3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/location/configuration/') while logged-in to the admin, and cick on the 'Configure Google OAuth2' link.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
+3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/admin/location/locationsource/configure-accounts/') while logged-in to the admin, and cick on the 'Configure Google OAuth2' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
 4. Wire up a cron job.
     * Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
     * You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
 
-Consuming Runmeter Information
-------------------------------
+Consuming Runmeter Paths
+------------------------
 
 Runmeter does not provide an API, but does allow you to configure the application to send out e-mail notifications when you begin (and finish, etc) your run, bike, or anything else.  To consume information from Runmeter, we'll configure it to e-mail to an otherwise-unused e-mail inbox (important), and configure django-location to consume those e-mail messages and extract coordinates from the linked-to KML file.
 

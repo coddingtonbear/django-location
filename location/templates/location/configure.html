@@ -1,0 +1,49 @@
+{% extends "admin/base_site.html" %}
+
+{% block breadcrumbs %}
+    {% load i18n %}
+    {% load url from future %}
+    <div class="breadcrumbs">
+        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> ›
+        <a href="{% url 'admin:app_list' 'location' %}">Location</a> ›
+        <a href="{% url 'admin:location_locationsource_changelist' %}">Location Sources</a>
+        {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+{% endblock %}
+
+{% block content %}
+    {% if messages %}
+        {% for msg in messages %}
+            <p class="error">{{ msg.message }} ({{ msg.extra_tags }})</p>
+        {% endfor %}
+    {% endif %}
+    {% if error_msg %}
+        <p>Details:</p>
+        <p class="error">{{ error_msg }}</p>
+    {% endif %}
+
+    <h2>Foursquare Configuration</h2>
+    <form action="{% url 'socialauth_begin' "foursquare" %}" method="GET">
+        <table>
+            <tr>
+                <th>Callback URL</th>
+                <td>https://{{ domain }}{% url 'socialauth_complete' 'foursquare' %}</td>
+            </tr>
+            <tr>
+                <th>Push URL</th>
+                <td>http://{{ domain }}{% url 'foursquare_push' %}</td>
+            </tr>
+        </table>
+        <input type="submit" value="Authorize Foursquare">
+    </form>
+    <h2>Google Latitude Configuration</h2>
+    <form action="{% url 'socialauth_begin' "google-oauth2" %}" method="GET">
+        <table>
+            <tr>
+                <th>Callback URL</th>
+                <td>https://{{ domain }}{% url 'socialauth_complete' 'google-oauth2' %}</td>
+            </tr>
+        </table>
+        <input type="submit" value="Authorize Google OAuth2">
+    </form>
+{% endblock %} 

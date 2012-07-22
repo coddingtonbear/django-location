@@ -1,0 +1,17 @@
+{% extends "admin/app_index.html" %}
+
+{% block sidebar %}
+    {% load url from future %}
+    <div id="content-related">
+        <div class="module">
+            <h2>Configuration</h2>
+            <ul class="actionlist">
+                <li class="changelink">
+                    <a href="{% url 'admin:location_configure_accounts' %}">Configure Accounts</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    {{ block.super }}
+{% endblock %}
