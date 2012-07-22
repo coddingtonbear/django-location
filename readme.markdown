@@ -68,7 +68,7 @@ If you have installed 'django-neighborhoods' and 'django-census-places', you can
     {% current_location of 'adam' as location_of_adam %}
 
     <p>
-        {{ location_of_adam.user.username }} is in the {{ location_of_adam.neighborhood }} neighborhood of {{ location_of_adam.city.name }}, {{ location_of_adam.city.get_state_display }}.
+        {{ location_of_adam.user.username }} is in the {{ location_of_adam.neighborhood.name }} neighborhood of {{ location_of_adam.city.name }}, {{ location_of_adam.city.get_state_display }}.
     </p>
 
 You might not always have neighborhood or city information for a given point, and maybe you would like to display a map using the Google Maps API; here's a fleshed-out version:
