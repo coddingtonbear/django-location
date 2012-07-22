@@ -88,11 +88,7 @@ Google Latitude provides a RESTful interface for gathering a user's most recentl
 Consuming Runmeter Information
 ------------------------------
 
-Additional requirements:
-
-* `django-mailbox`
-
-Configuration steps:
+Runmeter does not provide an API, but does allow you to configure the application to send out e-mail notifications when you begin (and finish, etc) your run, bike, or anything else.  To consume information from Runmeter, we'll configure it to e-mail to an otherwise-unused e-mail inbox (important), and configure django-location to consume those e-mail messages and extract coordinates from the linked-to KML file.
 
 1. Configure the Runmeter application to send start and finish notifications to a mailbox accessible by POP3 or IMAP.
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult [django-mailbox's documentation](http://bitbucket.org/latestrevision/django-mailbox/)).
