@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Do you share your location with Google Latitude?  Do you check-in on Foursquare?  Do you track your runs or bike commutes with Runmeter?  Why let third-party interfaces be your window into your day-to-day movements?
+Do you share your location with [Google Latitude](http://latitude.google.com/)?  Do you check-in on [Foursquare](http://foursquare.com/)?  Do you track your runs or bike commutes with [Runmeter](http://www.abvio.com/runmeter/)?  Why let third-party interfaces be your window into your day-to-day movements?
 
 This Django application will consume location information provided by Foursquare, Google Latitude, and, if you happen to be a user of it, Runmeter, and store it in your database for display at will.
 
@@ -10,19 +10,19 @@ Requirements
 
 * Django 1.4 or greater
     * Django must also be using a [GIS-capable database backend](https://docs.djangoproject.com/en/dev/ref/contrib/gis/db-api/#spatial-backends) like PostGIS.
-* django-social-auth (for OAuth keys used for communicating with Google Latitude and Foursquare)
-* pytz
+* [django-social-auth](https://github.com/omab/django-social-auth/) (for OAuth keys used for communicating with Google Latitude and Foursquare)
+* [pytz](http://pytz.sourceforge.net/)
 
 ### Recommended
 
 Each point gathered will also be able to provide to you what neighborhood and city it is in if the following two packages are installed:
 
-* django-neighborhoods
-* django-census-places
+* [django-neighborhoods](http://bitbucket.org/latestrevision/django-neighborhoods/)
+* [django-census-places](http://bitbucket.org/latestrevision/django-census-places/)
 
 If you'd like to consume Runmeter information, you'll need:
 
-* django-mailbox (for reading incoming e-mail messages sent from the Runmeter app)
+* [django-mailbox](http://bitbucket.org/latestrevision/django-mailbox/) (for reading incoming e-mail messages sent from the Runmeter app)
 
 Installation
 ------------
@@ -102,7 +102,7 @@ You might not always have neighborhood or city information for a given point, an
 Consuming Foursquare Check-ins
 ------------------------------
 
-Foursquare has options in its consumer settings to allow it to instantly post check-in information to an API endpoint that this application provides.
+[Foursquare](http://foursquare.com/) has options in its consumer settings to allow it to instantly post check-in information to an API endpoint that this application provides.
 To support that, you'll need to do the following:
 
 1. Go to the [Foursquare developer site](http://developer.foursquare.com/) and create a new consumer.
@@ -120,7 +120,7 @@ To support that, you'll need to do the following:
 Consuming Google Latitude Information
 -------------------------------------
 
-Google Latitude provides a RESTful interface for gathering a user's most recently known coordinates that can be wired-up to cron.
+[Google Latitude](http://latitude.google.com/) provides a RESTful interface for gathering a user's most recently known coordinates that can be wired-up to cron.
 
 1. Go to the [Google API Console](https://code.google.com/apis/console/) and create a new project.
     * Be sure to turn on the Google Latitude API.
@@ -146,7 +146,7 @@ Google Latitude provides a RESTful interface for gathering a user's most recentl
 Consuming Runmeter Paths
 ------------------------
 
-Runmeter does not provide an API, but does allow you to configure the application to send out e-mail notifications when you begin (and finish, etc) your run, bike, or anything else.  To consume information from Runmeter, we'll configure it to e-mail to an otherwise-unused e-mail inbox (important), and configure django-location to consume those e-mail messages and extract coordinates from the linked-to KML file.
+[Runmeter](http://www.abvio.com/runmeter/) does not provide an API, but does allow you to configure the application to send out e-mail notifications when you begin (and finish, etc) your run, bike, or anything else.  To consume information from Runmeter, we'll configure it to e-mail to an otherwise-unused e-mail inbox (important), and configure django-location to consume those e-mail messages and extract coordinates from the linked-to KML file.
 
 1. Configure the Runmeter application to send start and finish notifications to a mailbox accessible by POP3 or IMAP.
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult [django-mailbox's documentation](http://bitbucket.org/latestrevision/django-mailbox/)).
