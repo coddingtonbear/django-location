@@ -82,8 +82,8 @@ Google Latitude provides a RESTful interface for gathering a user's most recentl
 
 3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/location/configuration/') while logged-in to the admin, and cick on the 'Configure Google OAuth2' link.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
 4. Wire up a cron job.
-   * Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
-   * You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
+    * Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
+    * You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
 
 Consuming Runmeter Information
 ------------------------------
