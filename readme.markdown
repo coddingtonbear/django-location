@@ -99,4 +99,4 @@ Runmeter does not provide an API, but does allow you to configure the applicatio
 1. Configure the Runmeter application to send start and finish notifications to a mailbox accessible by POP3 or IMAP.
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult [django-mailbox's documentation](http://bitbucket.org/latestrevision/django-mailbox/)).
 3. Wire up a cron job.
-   a. Instruct the cron job to run `python /path/to/your/manage.py check_incoming_runmeter <name of mailbox>`
+    * Instruct the cron job to run `python /path/to/your/manage.py check_incoming_runmeter <name of mailbox>`
