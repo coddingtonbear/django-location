@@ -106,15 +106,15 @@ Consuming Foursquare Check-ins
 To support that, you'll need to do the following:
 
 1. Go to the [Foursquare developer site](http://developer.foursquare.com/) and create a new consumer.
-    a. Enter the callback URL for django-social-auth's Foursquare backend (generally 'http://yourdomain.com/complete/foursquare').
-    b. Turn on Push API notifications ('Push checkins by this consumer's users').
-    c. Enter the push URL for the django-location app (usually 'https://yourdomain.com/location/foursquare').  Note: Foursquare requires that the connection be made via HTTPs.
+    * Enter the callback URL for django-social-auth's Foursquare backend (generally http://yourdomain.com/complete/foursquare).
+    * Turn on Push API notifications ('Push checkins by this consumer's users').
+    * Enter the push URL for the django-location app (usually https://yourdomain.com/location/foursquare).  Note: Foursquare requires that the connection be made via HTTPs.
 2. Configure the following settings:
 
         FOURSQUARE_CONSUMER_KEY = "THECLIENTIDYOUJUSTGENERATED"
         FOURSQUARE_CONSUMER_SECRET  = "THECLIENTSECRETYOUJUSTGENERATED"
 
-3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/admin/location/locationsource/configure-accounts/') while logged-in to the admin, and click on the 'Authorize Foursquare' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to receive check-ins from the user with which you log-into Foursquare.
+3. Go to the configuration URL for the django-location app (usually https://yourdomain.com/admin/location/locationsource/configure-accounts/) while logged-in to the admin, and click on the 'Authorize Foursquare' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to receive check-ins from the user with which you log-into Foursquare.
 3. If everything is set-up, you shouldn't need to do anything more, but Twitter does offer a 'Send a test push' button on their consumer console that you can use to verify that everything is properly connected.
 
 Consuming Google Latitude Information
@@ -130,7 +130,7 @@ Consuming Google Latitude Information
         * Enter your domain as the site hostname.
         * Click 'Create Client ID'
     * Click 'Edit Settings' on your newly-created Client ID.
-    * Enter the callback URL for django-social-auth's Google OAuth2 backend (generally 'http://yourdomain.com/complete/google-oauth2').
+    * Enter the callback URL for django-social-auth's Google OAuth2 backend (generally http://yourdomain.com/complete/google-oauth2).
 2. Configure the following settings:
 
         GOOGLE_OAUTH2_CLIENT_ID = "the.client.id.that.you.just.generated"
@@ -138,7 +138,7 @@ Consuming Google Latitude Information
         GOOGLE_OAUTH_EXTRA_SCOPE = ["https://www.googleapis.com/auth/latitude.all.best"]
         GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 
-3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/admin/location/locationsource/configure-accounts/') while logged-in to the admin, and cick on the 'Configure Google OAuth2' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
+3. Go to the configuration URL for the django-location app (usually https://yourdomain.com/admin/location/locationsource/configure-accounts/) while logged-in to the admin, and cick on the 'Configure Google OAuth2' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
 4. Wire up a cron job.
     * Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
     * You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
