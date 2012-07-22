@@ -71,9 +71,10 @@ If you have installed 'django-neighborhoods' and 'django-census-places', you can
         {{ location_of_adam.user.username }} is in the {{ location_of_adam.neighborhood }} neighborhood of {{ location_of_adam.city.name }}, {{ location_of_adam.city.get_state_display }}.
     </p>
 
-You can even display a map using the Google Maps API:
+You might not always have neighborhood or city information for a given point, and maybe you would like to display a map using the Google Maps API; here's a fleshed-out version:
 
     {% load current_location %}
+    <script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript"></script>
 
     {% current_location of 'somebody' as location %}
     {{ location.user.username }} is
