@@ -48,6 +48,56 @@ You'll want to add both django-social-auth and django-location to your project's
     url(r'^location/', include('location.urls')),
     url(r'', include('social_auth.urls')),
 
+Template Tags
+-------------
+
+You can use the `current_location` template tag to gather the most recent location for a given user.  
+
+Simple example:
+
+    {% load current_location %}
+    {% current_location of 'adam' as location_of_adam %}
+
+    <p>
+        {{ location_of_adam.user.username }} is at {{ location_of_adam.location.coords.1 }}, {{ location_of_adam.location.coords.0 }}
+    </p>
+
+If you have installed 'django-neighborhoods' and 'django-census-places', you can also print city and neighborhood information:
+
+    {% load current_location %}
+    {% current_location of 'adam' as location_of_adam %}
+
+    <p>
+        {{ location_of_adam.user.username }} is in the {{ location_of_adam.neighborhood }} neighborhood of {{ location_of_adam.city.name }}, {{ location_of_adam.city.get_state_display }}.
+    </p>
+
+You can even display a map using the Google Maps API:
+
+    {% load current_location %}
+
+    {% current_location of 'somebody' as location %}
+    {{ location.user.username }} is
+    {% if location.neighborhood %}
+        in the {{ location.neighborhood.name }} neighborhood of {{ location.neighborhood.city }},
+        {{ location.neighborhood.state }}:
+    {% elif location.city %}
+        in {{ location.city.name }}, {{ location.city.get_state_display }}:
+    {% else %}
+        ({{ location.get_nearest_city.distance.mi }} miles from {{ location.get_nearest_city.name }}):
+    {% endif %}
+    <div id="my_location_map" style="width: 100%; height: 400px;"></div>
+    <script type="text/javascript">
+        var myLocation = document.getElementById('my_location_map');
+        myLocation.gmap({
+            'center': '{{ location.location.coords.1 }},{{ location.location.coords.0 }}',
+            'zoom': 10,
+            'mapTypeId': google.maps.MapTypeId.HYBRID
+        });
+        myLocation.gmap('addMarker', {
+            'position': '{{ location.location.coords.1 }},{{ location.location.coords.0 }}',
+        });
+    </script>
+
 Consuming Foursquare Check-ins
 ------------------------------
 
