@@ -65,14 +65,14 @@ Consuming Google Latitude Information
 Google Latitude provides a RESTful interface for gathering a user's most recently known coordinates that can be wired-up to cron.
 
 1. Go to the [Google API Console](https://code.google.com/apis/console/) and create a new project.
-    a. Be sure to turn on the Google Latitude API.
-    b. Go to the 'API Access' page and create an OAuth 2.0 Client ID.
-        i. Enter any 'Product Name' you'd like, and feel free to leave the 'Product Logo' field blank.
-        ii. Select 'Web Application' as your application type.
-        iii. Enter your domain as the site hostname.
-        iv. Click 'Create Client ID'
-    c. Click 'Edit Settings' on your newly-created Client ID.
-    d. Enter the callback URL for django-social-auth's Google OAuth2 backend (generally 'http://yourdomain.com/complete/google-oauth2').
+    1. Be sure to turn on the Google Latitude API.
+    2. Go to the 'API Access' page and create an OAuth 2.0 Client ID.
+        1. Enter any 'Product Name' you'd like, and feel free to leave the 'Product Logo' field blank.
+        2. Select 'Web Application' as your application type.
+        3. Enter your domain as the site hostname.
+        4. Click 'Create Client ID'
+    3. Click 'Edit Settings' on your newly-created Client ID.
+    4. Enter the callback URL for django-social-auth's Google OAuth2 backend (generally 'http://yourdomain.com/complete/google-oauth2').
 2. Configure the following settings:
 
         GOOGLE_OAUTH2_CLIENT_ID = "the.client.id.that.you.just.generated"
@@ -82,8 +82,8 @@ Google Latitude provides a RESTful interface for gathering a user's most recentl
 
 3. Go to the configuration URL for the django-location app (usually 'https://yourdomain.com/location/configuration/') while logged-in to the admin, and cick on the 'Configure Google OAuth2' link.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
 4. Wire up a cron job.
-   a. Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
-   b. You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
+   1. Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
+   2. You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
 
 Consuming Runmeter Information
 ------------------------------
