@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='django-location',
-    version='1.0.2',
+    version='1.0.3',
     url='http://bitbucket.org/latestrevision/django-location/',
     description='Gather, store, and display real-time location information from Foursquare, Google Latitude, and more.',
     author='Adam Coddington',
@@ -31,6 +31,7 @@ setup(
         'django>=1.4',
         'django-social-auth',
         'pytz',
+        'requests',
         'jsonfield',
         'lxml',
         ],

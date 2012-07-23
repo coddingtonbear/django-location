@@ -14,6 +14,7 @@ Requirements
 * [jsonfield](https://github.com/bradjasper/django-jsonfield/)
 * [lxml](http://lxml.de/)
 * [pytz](http://pytz.sourceforge.net/), but you probably have this already if you're using Django 1.4.
+* [requests](http://docs.python-requests.org/)
 
 ### Recommended
 
