@@ -8,11 +8,12 @@ setup(
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     classifiers=[
+        'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
-        'Topic :: Utilities',
+        'Topic :: Scientific/Engineering :: GIS',
     ],
     include_package_data=True,
     extras_require={
