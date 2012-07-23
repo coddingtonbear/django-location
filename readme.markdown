@@ -8,10 +8,12 @@ This Django application will consume location information provided by Foursquare
 Requirements
 ------------
 
-* Django 1.4 or greater
+* [Django](http://djangoproject.com/) 1.4 or greater
     * Django must also be using a [GIS-capable database backend](https://docs.djangoproject.com/en/dev/ref/contrib/gis/db-api/#spatial-backends) like PostGIS.
 * [django-social-auth](https://github.com/omab/django-social-auth/) (for OAuth keys used for communicating with Google Latitude and Foursquare)
-* [pytz](http://pytz.sourceforge.net/)
+* [jsonfield](https://github.com/bradjasper/django-jsonfield/)
+* [lxml](http://lxml.de/)
+* [pytz](http://pytz.sourceforge.net/), but you probably have this already if you're using Django 1.4.
 
 ### Recommended
 

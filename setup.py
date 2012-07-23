@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='django-location',
-    version='1.0.1',
+    version='1.0.2',
     url='http://bitbucket.org/latestrevision/django-location/',
     description='Gather, store, and display real-time location information from Foursquare, Google Latitude, and more.',
     author='Adam Coddington',
@@ -22,12 +22,17 @@ setup(
             ],
             'runmeter': [
                 'django-mailbox',
+            ],
+            'kml': [
+                'pykml',
             ]
         },
     install_requires=[
         'django>=1.4',
         'django-social-auth',
         'pytz',
+        'jsonfield',
+        'lxml',
         ],
     packages=[
         'location',

@@ -7,6 +7,7 @@ from django.contrib.gis.geos import Point
 from django.http import HttpResponse
 from django.template.response import TemplateResponse
 from django.views.decorators.csrf import csrf_exempt
+from lxml import etree
 import pytz
 from social_auth.models import UserSocialAuth
 
@@ -28,7 +29,6 @@ def my_location(request):
 
 @staff_member_required
 def get_kml(request):
-    from lxml import etree
     from pykml.factory import KML_ElementMaker as KML
     since = datetime.datetime.utcnow().replace(tzinfo=pytz.utc) - datetime.timedelta(days=int(request.GET.get('days', 7)))
     placemarks = []
