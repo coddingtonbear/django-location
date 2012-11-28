@@ -61,9 +61,7 @@ class Command(BaseCommand):
         points = self.get_points(document)
         route_name = self.get_route_name(document)
 
-        max_date = LocationSnapshot.objects\
-                .filter(source=source)\
-                .aggregate(max_date=Max('date'))['max_date']
+        max_date = None
         for key_name, data_point in points.items():
             if key_name not in source.data['known_points'].keys():
                 logger.debug("%s not in %s" % (
