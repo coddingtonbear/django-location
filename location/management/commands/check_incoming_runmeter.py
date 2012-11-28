@@ -34,9 +34,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.user = User.objects.get(username=args[1])
         mailbox_name = args[0]
-        messages = Message.objects.filter(
+        messages = Message.unread_messages.filter(
                     mailbox__name = mailbox_name
-                    ).order_by('received')
+                ).order_by('received')
         for message in messages:
             logger.info("Received message %s" % message)
             url = self.get_import_url(message)
@@ -46,8 +46,10 @@ class Command(BaseCommand):
                 logger.info("Is finishing e-mail.")
                 source.active = False
             self.process_source(source)
-            message.delete()
-            logger.debug("Deleted.")
+            read_date = datetime.datetime.utcnow().replace(utc)
+            message.read = read_date
+            message.save()
+            logger.debug("Marked as read.")
         
         for ongoing_source in LocationSource.objects.filter(active=True):
             self.process_source(ongoing_source)
@@ -79,9 +81,9 @@ class Command(BaseCommand):
                     point = LocationSnapshot()
                     point.user = self.user
                     point.location = Point(
-                                data_point['lat'],
-                                data_point['lng']
-                                )
+                        data_point['lat'],
+                        data_point['lng']
+                    )
                     point.source = source
                     point.date = point_date
                     point.save()
