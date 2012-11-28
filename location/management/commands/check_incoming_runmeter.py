@@ -131,6 +131,8 @@ class Command(BaseCommand):
             point_date = start_time + datetime.timedelta(
                         seconds = data_point['time']
                         )
+            if isinstance(source.data['known_points'], list):
+                source.data['known_points'] = {}
             if key_name not in source.data['known_points'].keys():
                 logger.debug("Point %s,%s at %s not in known points" % (
                         data_point['lat'],
