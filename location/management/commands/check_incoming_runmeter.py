@@ -86,7 +86,12 @@ class Command(BaseCommand):
             if self.is_finish_email(message):
                 logger.info("Is finishing e-mail.")
                 source.active = False
-            self.process_source(source)
+            try:
+                self.process_source(source)
+            except urllib2.HTTPError:
+                logger.warning('Unable to get document!')
+            except Exception as e:
+                logger.exception(e)
             if options['confirm'] and not self.yes_or_no_question('Mark as read?'):
                 logger.debug("Skipped.")
             else:
@@ -282,6 +287,7 @@ class Command(BaseCommand):
                 )
 
     def get_import_url(self, message):
+        body = message.get_email_object().get_payload().replace('=\n', '')
         matches = re.search(r"Import URL: (.*)", message.body)
         if not matches:
             return None
