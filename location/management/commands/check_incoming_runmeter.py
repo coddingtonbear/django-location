@@ -36,7 +36,7 @@ class Command(BaseCommand):
         mailbox_name = args[0]
         messages = Message.unread_messages.filter(
                     mailbox__name = mailbox_name
-                ).order_by('received')
+                ).order_by('processed')
         for message in messages:
             logger.info("Received message %s" % message)
             url = self.get_import_url(message)
