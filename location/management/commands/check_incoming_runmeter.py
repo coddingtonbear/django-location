@@ -46,7 +46,7 @@ class Command(BaseCommand):
                 logger.info("Is finishing e-mail.")
                 source.active = False
             self.process_source(source)
-            read_date = datetime.datetime.utcnow().replace(utc)
+            read_date = datetime.datetime.utcnow().replace(tzinfo=utc)
             message.read = read_date
             message.save()
             logger.debug("Marked as read.")
