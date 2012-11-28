@@ -66,7 +66,10 @@ class Command(BaseCommand):
             if options['confirm'] and not self.yes_or_no_question('Process this message?'):
                 continue
             url = self.get_import_url(message)
-            logger.debug("Import URL %s" % url)
+            if not url:
+                logger.warning("Unable to find import URL in message ID %s" % message.pk)
+                continue
+            logger.info("Import URL %s" % url)
             source = self.get_source(url)
             if options['confirm'] and self.yes_or_no_question(
                     'Reset known points?',
