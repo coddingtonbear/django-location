@@ -32,6 +32,17 @@ class LocationSourceType(models.Model):
             blank=True,
             upload_to='source_type_icons/'
             )
+    ttl_seconds = models.PositiveIntegerField(
+            default=3600,
+            help_text=(
+                "TTL (Time to live) for coordinates of this type.  Generally, "
+                "this should store the median amount of time between "
+                "individual LocationSnapshot instances of this type.  It is "
+                "additionally used for implied accuracy -- a point with a high "
+                "TTL is expected to be less-accurate than a point with a low "
+                "TTL."
+            )
+        )
     
     def __unicode__(self):
         return self.name
