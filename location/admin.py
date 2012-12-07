@@ -54,6 +54,9 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
     raw_id_fields = ('source', )
     list_per_page = 25
     ordering = ['-date']
+    list_filter = [
+        'source__type'
+    ]
 
     def nearest_city(self, obj):
         nearest = obj.find_nearest_city()
