@@ -288,7 +288,9 @@ class Command(BaseCommand):
 
     def get_import_url(self, message):
         body = message.get_email_object().get_payload().replace('=\n', '')
-        matches = re.search(r"Import URL: (.*)", body)
+        matches = re.search(r"Import Link: (.*)", body)
         if not matches:
-            return None
+            matches = re.search(r"Import URL: (.*)", body)
+            if not matches:
+                return None
         return matches.groups()[0].strip()
