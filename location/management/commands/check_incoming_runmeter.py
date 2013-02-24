@@ -133,7 +133,6 @@ class Command(BaseCommand):
 
         max_date = self.get_max_date(source)
         points_created = 0
-        points_skipped = 0
         for data_point in points:
             key_name = data_point['key']
             point_date = start_time + datetime.timedelta(
@@ -147,40 +146,21 @@ class Command(BaseCommand):
                         data_point['lng'],
                         point_date
                     ))
-                if max_date:
-                    min_next_date = max_date + datetime.timedelta(seconds=MINIMUM_INTERVAL_SECONDS)
-                else:
-                    min_next_date = None
-                if not max_date or (min_next_date and min_next_date < point_date):
-                    point = LocationSnapshot()
-                    point.user = self.user
-                    point.location = Point(
+                point = LocationSnapshot()
+                point.user = self.user
+                point.location = Point(
+                    data_point['lat'],
+                    data_point['lng']
+                )
+                point.source = source
+                point.date = point_date
+                point.save()
+                points_created += 1
+                logger.debug("Creating point %s,%s at %s" % (
                         data_point['lat'],
-                        data_point['lng']
-                    )
-                    point.source = source
-                    point.date = point_date
-                    point.save()
-                    max_date = point_date
-                    points_created += 1
-                    logger.debug("Creating point %s,%s at %s" % (
-                            data_point['lat'],
-                            data_point['lng'],
-                            point_date
-                        ))
-                else:
-                    if min_next_date:
-                        logger.debug('%s - %s = %s seconds' % (
-                            min_next_date,
-                            point_date,
-                            (min_next_date - point_date).seconds
-                            ))
-                    logger.debug("Minimum point interval not exceeded for %s,%s at %s" % (
-                            data_point['lat'],
-                            data_point['lng'],
-                            point_date
-                        ))
-                    points_skipped += 1
+                        data_point['lng'],
+                        point_date
+                    ))
                 source.data['known_points'][key_name] = data_point
             else:
                 logger.debug("Point %s,%s at %s already exists" % (
@@ -188,11 +168,10 @@ class Command(BaseCommand):
                     data_point['lng'],
                     point_date
                 ))
-        logger.info('Created %s points between %s and %s (%s skipped)' % (
+        logger.info('Created %s points between %s and %s' % (
             points_created,
             self.get_min_date(source),
             self.get_max_date(source),
-            points_skipped,
         ))
         if route_name:
             source.name = "%s (%s)" % (
