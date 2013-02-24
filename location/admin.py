@@ -17,6 +17,9 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
                 'type',
                 'active'
             )
+    list_filter = [
+        'type'
+    ]
     ordering = ['-created']
 
     def get_urls(self):
