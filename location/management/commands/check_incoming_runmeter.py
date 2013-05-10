@@ -101,12 +101,18 @@ class Command(BaseCommand):
                     logger.debug("Marked as read.")
             except Exception as e:
                 logger.exception(
-                    'Error processing feed %s', 
+                    'Error processing feed: %s',
                     e
                 )
         
         for ongoing_source in LocationSource.objects.filter(active=True):
-            self.process_source(ongoing_source)
+            try:
+                self.process_source(ongoing_source)
+            except Exception as e:
+                logger.exception(
+                    'Error processing ongoing source: %s',
+                    e
+                )
 
     def yes_or_no_question(self, question, default_yes=True):
         if default_yes:
