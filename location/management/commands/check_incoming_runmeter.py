@@ -16,7 +16,7 @@ from optparse import make_option
 from location.models import LocationSource, LocationSourceType, LocationSnapshot
 from django_mailbox.models import Message
 
-logger = logging.getLogger('location.management.commands.check_incoming_runmeter')
+logger = logging.getLogger(__name__)
 
 MINIMUM_INTERVAL_SECONDS = getattr(settings, 'RUNMETER_MINIMAL_INTERVAL_SECONDS', 15)
 
@@ -58,46 +58,52 @@ class Command(BaseCommand):
                     mailbox__name = mailbox_name
                 ).order_by('processed')
         for message in messages:
-            logger.info("Received message %s from %s at %s" % (
+            logger.info("Received message %s from %s at %s", 
                 message.subject,
                 message.from_header,
                 message.processed,
-            ))
-            if options['confirm'] and not self.yes_or_no_question('Process this message?'):
-                continue
-            url = self.get_import_url(message)
-            if not url:
-                logger.warning("Unable to find import URL in message ID %s" % message.pk)
-                continue
-            logger.info("Import URL %s" % url)
-            source = self.get_source(url)
-            if options['confirm'] and self.yes_or_no_question(
-                    'Reset known points?',
-                    default_yes=False,
-                ):
-                source.data['known_points'] = {}
-            if options['confirm'] and self.yes_or_no_question(
-                    'Delete existing associated snapshots?',
-                    default_yes=False,
-                ):
-                LocationSnapshot.objects\
-                    .filter(source=source)\
-                    .delete()
-            if self.is_finish_email(message):
-                logger.info("Is finishing e-mail.")
-                source.active = False
+            )
             try:
-                self.process_source(source)
-            except urllib2.HTTPError:
-                logger.warning('Unable to get document!')
+                if options['confirm'] and not self.yes_or_no_question('Process this message?'):
+                    continue
+                url = self.get_import_url(message)
+                if not url:
+                    logger.warning("Unable to find import URL in message ID %s", message.pk)
+                    continue
+                logger.info("Import URL %s", url)
+                source = self.get_source(url)
+                if options['confirm'] and self.yes_or_no_question(
+                        'Reset known points?',
+                        default_yes=False,
+                    ):
+                    source.data['known_points'] = {}
+                if options['confirm'] and self.yes_or_no_question(
+                        'Delete existing associated snapshots?',
+                        default_yes=False,
+                    ):
+                    LocationSnapshot.objects\
+                        .filter(source=source)\
+                        .delete()
+                if self.is_finish_email(message):
+                    logger.info("Is finishing e-mail.")
+                    source.active = False
+                try:
+                    self.process_source(source)
+                except urllib2.HTTPError:
+                    logger.warning('Unable to get document!')
+                except Exception as e:
+                    logger.exception(e)
+                if options['confirm'] and not self.yes_or_no_question('Mark as read?'):
+                    logger.debug("Skipped.")
+                else:
+                    message.read = datetime.datetime.utcnow().replace(tzinfo=utc)
+                    message.save()
+                    logger.debug("Marked as read.")
             except Exception as e:
-                logger.exception(e)
-            if options['confirm'] and not self.yes_or_no_question('Mark as read?'):
-                logger.debug("Skipped.")
-            else:
-                message.read = datetime.datetime.utcnow().replace(tzinfo=utc)
-                message.save()
-                logger.debug("Marked as read.")
+                logger.exception(
+                    'Error processing feed %s', 
+                    e
+                )
         
         for ongoing_source in LocationSource.objects.filter(active=True):
             self.process_source(ongoing_source)
@@ -125,7 +131,7 @@ class Command(BaseCommand):
         return False
 
     def process_source(self, source):
-        logger.info("Processing source %s" % source)
+        logger.info("Processing source %s", source)
         document = self.get_document(source.data['url'])
         start_time = self.get_start_time(document)
         points = self.get_points(document)
@@ -141,11 +147,11 @@ class Command(BaseCommand):
             if isinstance(source.data['known_points'], list):
                 source.data['known_points'] = {}
             if key_name not in source.data['known_points'].keys():
-                logger.debug("Point %s,%s at %s not in known points" % (
-                        data_point['lat'],
-                        data_point['lng'],
-                        point_date
-                    ))
+                logger.debug("Point %s,%s at %s not in known points", 
+                    data_point['lat'],
+                    data_point['lng'],
+                    point_date
+                )
                 point = LocationSnapshot()
                 point.user = self.user
                 point.location = Point(
@@ -156,23 +162,23 @@ class Command(BaseCommand):
                 point.date = point_date
                 point.save()
                 points_created += 1
-                logger.debug("Creating point %s,%s at %s" % (
-                        data_point['lat'],
-                        data_point['lng'],
-                        point_date
-                    ))
-                source.data['known_points'][key_name] = data_point
-            else:
-                logger.debug("Point %s,%s at %s already exists" % (
+                logger.debug("Creating point %s,%s at %s", 
                     data_point['lat'],
                     data_point['lng'],
                     point_date
-                ))
-        logger.info('Created %s points between %s and %s' % (
+                )
+                source.data['known_points'][key_name] = data_point
+            else:
+                logger.debug("Point %s,%s at %s already exists", 
+                    data_point['lat'],
+                    data_point['lng'],
+                    point_date
+                )
+        logger.info('Created %s points between %s and %s', 
             points_created,
             self.get_min_date(source),
             self.get_max_date(source),
-        ))
+        )
         if route_name:
             source.name = "%s (%s)" % (
                     route_name if route_name else 'AdHoc',
@@ -190,8 +196,8 @@ class Command(BaseCommand):
     def get_activity_status(self, document, source):
         max_date = source.points.aggregate(avg=Max('date'))['avg']
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
-        logger.debug("Max Date %s" % max_date)
-        logger.debug("Now %s" % now)
+        logger.debug("Max Date %s", max_date)
+        logger.debug("Now %s", now)
         if max_date and now - max_date > datetime.timedelta(minutes = 60):
             return False
         return True
