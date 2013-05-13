@@ -106,48 +106,57 @@ class LocationSnapshot(models.Model):
             name
         )
 
-    def get_cached(self, name):
-        return cache.get(
+    def get_cached(self, name, cls):
+        pk = cache.get(
             self.get_cache_key(name)
         )
+        if pk:
+            return cls.objects.get(pk=pk)
+        return None
 
     def set_cached(self, name, value):
         cache.set(
             self.get_cache_key(name),
-            value
+            value.pk
         )
 
     @property
     def city(self):
-        cached = self.get_cached('city')
-        if cached:
-            return cached
         if PlaceBoundary:
+            cached = self.get_cached('city', PlaceBoundary)
+            if cached:
+                return cached
             try:
-                return PlaceBoundary.get_containing(self.location)
+                result = PlaceBoundary.get_containing(self.location)
+                self.set_cached('city', result)
+                return result
             except PlaceBoundary.DoesNotExist:
                 pass
         return None
 
     @property
     def neighborhood(self):
-        cached = self.get_cached('neighborhood')
-        if cached:
-            return cached
         if Neighborhood:
+            cached = self.get_cached('neighborhood', Neighborhood)
+            if cached:
+                return cached
             try:
-                return Neighborhood.get_containing(self.location)
+                result = Neighborhood.get_containing(self.location)
+                self.set_cached('neighborhood', result)
+                return result
             except Neighborhood.DoesNotExist:
                 pass
         return None
 
     def find_nearest_city(self):
-        cached = self.get_cached('nearest_city')
-        if cached:
-            return cached
         if PlaceBoundary:
+            cached = self.get_cached('nearest_city', PlaceBoundary)
+            if cached:
+                return cached
             try:
-                return PlaceBoundary.get_nearest_to(self.location)
+                result = PlaceBoundary.get_nearest_to(self.location)
+                self.set_cached('nearest_city', result)
+                return result
             except PlaceBoundary.DoesNotExist:
                 pass
         return None
