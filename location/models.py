@@ -106,24 +106,16 @@ class LocationSnapshot(models.Model):
             name
         )
 
-    def get_cached(self, name, cls):
-        pk = cache.get(
-            self.get_cache_key(name)
-        )
-        if pk:
-            return cls.objects.get(pk=pk)
-        return None
+    def get_cached(self, name):
+        return cache.get(self.get_cache_key(name))
 
     def set_cached(self, name, value):
-        cache.set(
-            self.get_cache_key(name),
-            value.pk
-        )
+        cache.set(self.get_cache_key(name), value, 60 * 60 * 24)
 
     @property
     def city(self):
         if PlaceBoundary:
-            cached = self.get_cached('city', PlaceBoundary)
+            cached = self.get_cached('city')
             if cached:
                 return cached
             try:
@@ -137,7 +129,7 @@ class LocationSnapshot(models.Model):
     @property
     def neighborhood(self):
         if Neighborhood:
-            cached = self.get_cached('neighborhood', Neighborhood)
+            cached = self.get_cached('neighborhood')
             if cached:
                 return cached
             try:
@@ -150,7 +142,7 @@ class LocationSnapshot(models.Model):
 
     def find_nearest_city(self):
         if PlaceBoundary:
-            cached = self.get_cached('nearest_city', PlaceBoundary)
+            cached = self.get_cached('nearest_city')
             if cached:
                 return cached
             try:
