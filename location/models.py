@@ -1,8 +1,10 @@
 import datetime
 import logging
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.core.cache import cache
 from jsonfield.fields import JSONField
 
 logger = logging.getLogger('location.models')
@@ -23,6 +25,13 @@ except ImportError:
         "be populated with neighborhood information."
         )
     Neighborhood = None
+
+
+CACHE_PREFIX = getattr(
+    settings,
+    'DJANGO_LOCATION_CACHE_PREFIX',
+    'LOCATION',
+)
 
 
 class LocationSourceType(models.Model):
@@ -89,34 +98,59 @@ class LocationSnapshot(models.Model):
 
     objects = models.GeoManager()
 
+    def get_cache_key(self, name):
+        return '%s:%s:%s:%s' % (
+            CACHE_PREFIX,
+            self.__class__.__name__,
+            self.pk,
+            name
+        )
+
+    def get_cached(self, name):
+        return cache.get(
+            self.get_cache_key(name)
+        )
+
+    def set_cached(self, name, value):
+        cache.set(
+            self.get_cache_key(name),
+            value
+        )
+
     @property
     def city(self):
+        cached = self.get_cached('city')
+        if cached:
+            return cached
         if PlaceBoundary:
-            if not hasattr(self, '_city'):
-                try:
-                    self._city = PlaceBoundary.get_containing(self.location)
-                except PlaceBoundary.DoesNotExist:
-                    self._city = None
-            return self._city
+            try:
+                return PlaceBoundary.get_containing(self.location)
+            except PlaceBoundary.DoesNotExist:
+                pass
+        return None
 
     @property
     def neighborhood(self):
+        cached = self.get_cached('neighborhood')
+        if cached:
+            return cached
         if Neighborhood:
-            if not hasattr(self, '_neighborhood'):
-                try:
-                    self._neighborhood = Neighborhood.get_containing(self.location)
-                except Neighborhood.DoesNotExist:
-                    self._neighborhood = None
-            return self._neighborhood
+            try:
+                return Neighborhood.get_containing(self.location)
+            except Neighborhood.DoesNotExist:
+                pass
+        return None
 
     def find_nearest_city(self):
+        cached = self.get_cached('nearest_city')
+        if cached:
+            return cached
         if PlaceBoundary:
-            if not hasattr(self, '_nearest_city'):
-                try:
-                    self._nearest_city = PlaceBoundary.get_nearest_to(self.location)
-                except PlaceBoundary.DoesNotExist:
-                    self._nearest_city = None
-            return self._nearest_city
+            try:
+                return PlaceBoundary.get_nearest_to(self.location)
+            except PlaceBoundary.DoesNotExist:
+                pass
+        return None
 
     def __unicode__(self):
         return u"%s's location at %s" % (
