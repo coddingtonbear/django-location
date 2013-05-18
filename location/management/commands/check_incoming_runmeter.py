@@ -16,9 +16,9 @@ from optparse import make_option
 from location.models import LocationSource, LocationSourceType, LocationSnapshot
 from django_mailbox.models import Message
 
+
 logger = logging.getLogger(__name__)
 
-MINIMUM_INTERVAL_SECONDS = getattr(settings, 'RUNMETER_MINIMAL_INTERVAL_SECONDS', 15)
 
 class Command(BaseCommand):
     args = '<django_mailbox.models.Mailbox.name> <django.contrib.auth.models.User.username>' 

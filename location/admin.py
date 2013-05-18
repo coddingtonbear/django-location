@@ -62,6 +62,9 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
     ]
 
     def nearest_city(self, obj):
+        city = obj.city
+        if city:
+            return city
         nearest = obj.find_nearest_city()
         if nearest.distance != None:
             return "%s (%d mi away)" % (
