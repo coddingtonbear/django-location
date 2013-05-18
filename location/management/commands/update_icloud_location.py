@@ -29,7 +29,7 @@ MIN_HORIZONTAL_ACCURACY = getattr(
     settings,
     'DJANGO_LOCATION_ICLOUD_MIN_HORIZONTAL_ACCURACY',
     20
-)
+) # Lower is better
 MAX_WAIT_SECONDS = getattr(
     settings,
     'DJANGO_LOCATION_ICLOUD_MAX_LOCATION_WAIT_SECONDS',

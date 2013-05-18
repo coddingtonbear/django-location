@@ -14,8 +14,20 @@ from social_auth.models import UserSocialAuth
 
 from location.models import LocationSourceType, LocationSource, LocationSnapshot
 
-logger = logging.getLogger('location.management.commands.update_latitude_location')
+logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
+
+
+MIN_ACCURACY = getattr(
+    settings,
+    'DJANGO_LOCATION_LATITUDE_MIN_ACCURACY',
+    20
+) # Lower is better
+
+
+class LocationUnavailableException(Exception):
+    pass
+
 
 class Command(BaseCommand):
     args = '<django.contrib.auth.models.User.username>'
@@ -43,8 +55,22 @@ class Command(BaseCommand):
         auth.extra_data = data
         auth.save()
 
+    def location_is_accurate(self, data):
+        if data['data']['accuracy'] > MIN_ACCURACY:
+            logger.info(
+                'Accuracy insufficient (> %s)',
+                MIN_ACCURACY
+            )
+            return False
+        return True
+
     def update_location(self, data, user):
         (source_type, created) = LocationSourceType.objects.get_or_create(name='Google Latitude')
+        if not self.location_is_accurate(data):
+            raise LocationUnavailableException(
+                'Latitude location is either out-of-date or too inaccurate.'
+            )
+
         local_tz = pytz.timezone('US/Pacific-New')
         date = datetime.datetime.fromtimestamp(
                     float(data['data']['timestampMs']) / 1000,
@@ -90,7 +116,7 @@ class Command(BaseCommand):
                     'grant_type': 'refresh_token'
                     },
                 )
-        logger.info(r.text)
+        logger.debug(r.text)
         response = json.loads(r.text)
         data['access_token'] = response['access_token']
         data['id_token'] = response['id_token']
@@ -104,7 +130,7 @@ class Command(BaseCommand):
                     'Authorization': 'Bearer ' + data['access_token']
                     }
                 )
-        logger.info(r.text)
+        logger.debug(r.text)
         response = json.loads(r.text)
         return response
 
