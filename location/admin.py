@@ -54,7 +54,7 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
                 'user',
             )
     date_hierarchy = 'date'
-    raw_id_fields = ('source', )
+    raw_id_fields = ('user', 'source', )
     list_per_page = 25
     ordering = ['-date']
     list_filter = [
