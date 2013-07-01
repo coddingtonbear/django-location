@@ -34,16 +34,27 @@ def my_location(request):
 @staff_member_required
 def get_kml(request):
     from pykml.factory import KML_ElementMaker as KML
-    since = (
-        datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
-        - datetime.timedelta(days=int(request.GET.get('days', 7)))
+    timezone = pytz.timezone(
+        request.GET.get('timezone', 'America/Los_Angeles')
     )
+    date_string = request.GET.get('date', None)
+    if date_string is None:
+        begin_date = timezone.localize(
+            datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
+        )
+    else:
+        year, month, day = date_string.split('-')
+        begin_date = datetime.datetime(
+            int(year), int(month), int(day)
+        ).replace(tzinfo=pytz.UTC)
+    end_date = begin_date + datetime.timedelta(days=1)
     placemarks = []
     icon_styles = []
     coord_string = ""
     points = models.LocationSnapshot.objects.filter(
-        date__gt=since
-    ).select_related().order_by('date')
+        date__gt=begin_date,
+        date__lte=end_date
+    ).select_related().order_by('date').iterator()
     source_types = models.LocationSourceType.objects.all()
     for source_type in source_types:
         if source_type.icon:
