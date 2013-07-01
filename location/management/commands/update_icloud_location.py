@@ -67,8 +67,8 @@ class Command(BaseCommand):
         try:
             device_id = args[3]
         except IndexError:
-            device_id =0
-        
+            device_id = 0
+
         blocking_key = self.get_cache_key(icloud_username, icloud_password)
         data = cache.get(
             blocking_key
@@ -101,7 +101,6 @@ class Command(BaseCommand):
                 'to iCloud.  Delaying further accesses of iCloud for this '
                 'username and password until %s UTC.' % until
             )
-
 
     def get_cache_key(self, icloud_username, icloud_password):
         key = icloud_username + ':' + hashlib.sha256(
