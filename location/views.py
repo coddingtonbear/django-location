@@ -37,9 +37,10 @@ def get_kml(request):
     timezone = pytz.timezone(
         request.GET.get('timezone', 'America/Los_Angeles')
     )
+    username = request.GET['username']
     date_string = request.GET.get('date', None)
     if date_string is None:
-        begin_date = timezone.localize(
+        begin_date = timezone.normalize(
             datetime.datetime.utcnow().replace(tzinfo=pytz.UTC)
         )
     else:
@@ -53,7 +54,8 @@ def get_kml(request):
     coord_string = ""
     points = models.LocationSnapshot.objects.filter(
         date__gt=begin_date,
-        date__lte=end_date
+        date__lte=end_date,
+        user__username=username
     ).select_related().order_by('date').iterator()
     source_types = models.LocationSourceType.objects.all()
     for source_type in source_types:
