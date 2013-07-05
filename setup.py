@@ -28,10 +28,7 @@ setup(
                 'pykml',
             ],
             'icloud': [
-                'pyicloud', # Currently, pending action from the package
-                            # maintainer, this is not distributed on PyPI,
-                            # you can, though, manually install this package
-                            # from https://github.com/latestrevision/pyicloud
+                'pyicloud',
             ]
         },
     install_requires=[
