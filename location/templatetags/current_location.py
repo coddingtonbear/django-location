@@ -12,6 +12,7 @@ logger = logging.getLogger('location.templatetags.current_location')
 
 LOCATION_HOME = getattr(settings, 'LOCATION_HOME', None)
 
+
 class LocationSnapshotNode(template.Node):
     def __init__(self, variable, username):
         self.username = username
@@ -20,14 +21,14 @@ class LocationSnapshotNode(template.Node):
     def render(self, context):
         try:
             snapshot_query = LocationSnapshot.objects.filter(
-                        user__username = self.username
-                    ).order_by('-date')
+                user__username=self.username
+            ).order_by('-date')
             if LOCATION_HOME:
                 snapshot_query = snapshot_query.distance(
-                        Point(
-                            *LOCATION_HOME
-                            )
-                        )
+                    Point(
+                        *LOCATION_HOME
+                    )
+                )
             snapshot = snapshot_query[0]
             logger.info(snapshot)
         except IndexError:
@@ -35,6 +36,7 @@ class LocationSnapshotNode(template.Node):
             snapshot = None
         context[self.variable] = snapshot
         return ''
+
 
 @register.tag(name='current_location')
 def do_get_current_location(parser, token):

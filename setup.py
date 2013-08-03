@@ -6,7 +6,7 @@ with open('requirements.txt', 'r') as in_:
 
 setup(
     name='django-location',
-    version='1.1.4',
+    version='1.5.1',
     url='http://bitbucket.org/latestrevision/django-location/',
     description='Gather, store, and display real-time location information from Foursquare, iCloud, and more.',
     author='Adam Coddington',
@@ -30,6 +30,9 @@ setup(
             ],
             'kml': [
                 'pykml',
+            ],
+            'icloud': [
+                'pyicloud',
             ]
         },
     install_requires=requirements,
