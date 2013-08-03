@@ -1,22 +1,14 @@
 Introduction
 ============
 
-Do you share your location with [Google Latitude](http://latitude.google.com/)?  Do you check-in on [Foursquare](http://foursquare.com/)?  Do you track your runs or bike commutes with [Runmeter](http://www.abvio.com/runmeter/)?  Why let third-party interfaces be your window into your day-to-day movements?
+Do you check-in on [Foursquare](http://foursquare.com/)?  Do you track your runs or bike commutes with [Runmeter](http://www.abvio.com/runmeter/)?  Do you use an IOS device?  Why let third-party interfaces be your window into your day-to-day movements?
 
-This Django application will consume location information provided by Foursquare, Google Latitude, and, if you happen to be a user of it, Runmeter, and store it in your database for display at will.
+This Django application will consume location information provided by Foursquare, iCloud, and, if you happen to be a user of it, Runmeter, and store it in your database for display at will.
 
-Requirements
-------------
+**Note**: Although this library will allow you to consume location information from Google Latitude, Google has announced that they will be discontinuing their Latitude service as of August 9th. If you are using an IOS device, consider switching to the (higher quality) iCloud location consumer.
 
-* [Django](http://djangoproject.com/) 1.4 or greater
-    * Django must also be using a [GIS-capable database backend](https://docs.djangoproject.com/en/dev/ref/contrib/gis/db-api/#spatial-backends) like PostGIS.
-* [django-social-auth](https://github.com/omab/django-social-auth/) (for OAuth keys used for communicating with Google Latitude and Foursquare)
-* [jsonfield](https://github.com/bradjasper/django-jsonfield/)
-* [lxml](http://lxml.de/)
-* [pytz](http://pytz.sourceforge.net/), but you probably have this already if you're using Django 1.4.
-* [requests](http://docs.python-requests.org/)
-
-### Recommended
+Recommended Extra Packages
+--------------------------
 
 Each point gathered will also be able to provide to you what neighborhood and city it is in if the following two packages are installed:
 
@@ -120,32 +112,6 @@ To support that, you'll need to do the following:
 3. Go to the configuration URL for the django-location app (usually http://yourdomain.com/admin/location/locationsource/configure-accounts/) while logged-in to the admin, and click on the 'Authorize Foursquare' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to receive check-ins from the user with which you log-into Foursquare.
 3. If everything is set-up, you shouldn't need to do anything more, but Foursquare does offer a 'Send a test push' button on their consumer console that you can use to verify that everything is properly connected.
 
-Consuming Google Latitude Information
--------------------------------------
-
-[Google Latitude](http://latitude.google.com/) provides a RESTful interface for gathering a user's most recently known coordinates that can be wired-up to cron.
-
-1. Go to the [Google API Console](https://code.google.com/apis/console/) and create a new project.
-    * Be sure to turn on the Google Latitude API.
-    * Go to the 'API Access' page and create an OAuth 2.0 Client ID.
-        * Enter any 'Product Name' you'd like, and feel free to leave the 'Product Logo' field blank.
-        * Select 'Web Application' as your application type.
-        * Enter your domain as the site hostname.
-        * Click 'Create Client ID'
-    * Click 'Edit Settings' on your newly-created Client ID.
-    * Enter the callback URL for django-social-auth's Google OAuth2 backend (generally http://yourdomain.com/complete/google-oauth2/).
-2. Configure the following settings:
-
-        GOOGLE_OAUTH2_CLIENT_ID = "the.client.id.that.you.just.generated"
-        GOOGLE_OAUTH2_CLIENT_SECRET = "the.client.secret.you.just.generated."
-        GOOGLE_OAUTH_EXTRA_SCOPE = ["https://www.googleapis.com/auth/latitude.all.best"]
-        GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
-
-3. Go to the configuration URL for the django-location app (usually http://yourdomain.com/admin/location/locationsource/configure-accounts/) while logged-in to the admin, and cick on the 'Configure Google OAuth2' button.  This will bring you to Foursquare's site using your configured options, and authorize your web application to gather location information from the Google Latitude API.
-4. Wire up a cron job.
-    * Instruct the cron job to run `python /path/to/your/manage.py update_latitude_location <django username>`
-    * You are required to post no more than 1,000,000 requests per day, so, if you are gathering the latitude information for fewer than 695 accounts, you can safely run the job once per minute per user.
-
 Consuming Runmeter Paths
 ------------------------
 
@@ -155,3 +121,4 @@ Consuming Runmeter Paths
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult [django-mailbox's documentation](http://bitbucket.org/latestrevision/django-mailbox/)).
 3. Wire up a cron job.
     * Instruct the cron job to run `python /path/to/your/manage.py check_incoming_runmeter <name of mailbox>`
+

@@ -1,10 +1,14 @@
 from setuptools import setup
 
+requirements = []
+with open('requirements.txt', 'r') as in_:
+    requirements = in_.readlines()
+
 setup(
     name='django-location',
     version='1.1.4',
     url='http://bitbucket.org/latestrevision/django-location/',
-    description='Gather, store, and display real-time location information from Foursquare, Google Latitude, and more.',
+    description='Gather, store, and display real-time location information from Foursquare, iCloud, and more.',
     author='Adam Coddington',
     author_email='me@adamcoddington.net',
     classifiers=[
@@ -28,19 +32,12 @@ setup(
                 'pykml',
             ]
         },
-    install_requires=[
-        'django>=1.4',
-        'django-social-auth',
-        'pytz',
-        'requests',
-        'jsonfield',
-        'lxml',
-        ],
+    install_requires=requirements,
     packages=[
         'location',
         'location.management',
         'location.management.commands',
         'location.migrations',
         'location.templatetags',
-        ],
+    ],
 )
