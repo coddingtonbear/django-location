@@ -1,5 +1,5 @@
-Introduction
-============
+django-location
+===============
 
 Do you check-in on `Foursquare <http://foursquare.com/>`__? Do you track
 your runs or bike commutes with
@@ -16,21 +16,6 @@ information from Google Latitude, Google has announced that they will be
 discontinuing their Latitude service as of August 9th. If you are using
 an IOS device, consider switching to the (higher quality) iCloud
 location consumer.
-
-Recommended Extra Packages
---------------------------
-
-Each point gathered will also be able to provide to you what
-neighborhood and city it is in if the following two packages are
-installed:
-
--  `django-neighborhoods <http://bitbucket.org/latestrevision/django-neighborhoods/>`__
--  `django-census-places <http://bitbucket.org/latestrevision/django-census-places/>`__
-
-If you'd like to consume Runmeter information, you'll need:
-
--  `django-mailbox <http://bitbucket.org/latestrevision/django-mailbox/>`__
-   (for reading incoming e-mail messages sent from the Runmeter app)
 
 Installation
 ------------
@@ -61,8 +46,23 @@ add them like::
     url(r'^location/', include('location.urls')),
     url(r'', include('social_auth.urls')),
 
-Template Tags
--------------
+Recommended Extra Packages
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each point gathered will also be able to provide to you what
+neighborhood and city it is in if the following two packages are
+installed:
+
+-  `django-neighborhoods <http://bitbucket.org/latestrevision/django-neighborhoods/>`__
+-  `django-census-places <http://bitbucket.org/latestrevision/django-census-places/>`__
+
+If you'd like to consume Runmeter information, you'll need:
+
+-  `django-mailbox <http://bitbucket.org/latestrevision/django-mailbox/>`__
+   (for reading incoming e-mail messages sent from the Runmeter app)
+
+Displaying Location Using a Template Tag
+----------------------------------------
 
 You can use the ``current_location`` template tag to gather the most
 recent location for a given user.
@@ -116,8 +116,11 @@ API; here's a fleshed-out version::
         });
     </script>
 
-Consuming Foursquare Check-ins
-------------------------------
+Location Sources
+----------------
+
+Foursquare
+~~~~~~~~~~
 
 `Foursquare <http://foursquare.com/>`__ has options in its consumer
 settings to allow it to instantly post check-in information to an API
@@ -151,8 +154,8 @@ do the following:
    console that you can use to verify that everything is properly
    connected.
 
-Consuming Runmeter Paths
-------------------------
+Runmeter
+~~~~~~~~
 
 `Runmeter <http://www.abvio.com/runmeter/>`__ does not provide an API,
 but does allow you to configure the application to send out e-mail
@@ -172,4 +175,33 @@ from the linked-to KML file.
    -  Instruct the cron job to run
       ``python /path/to/your/manage.py check_incoming_runmeter <name of mailbox>``
 
+iCloud
+~~~~~~
 
+`iCloud <https://www.icloud.com/>`__ provides a service named 'Find my iPhone'
+that allows you to request your device's location at-will.  This library
+provides you with an easy way to use this service's location information
+as one of your location sources.
+
+First, you need to identify the devices associated with your account, you can
+do that by using the ``list_icloud_devices`` management command::
+
+    python /path/to/your/manage.py list_icloud_devices <icloud username> <icloud password>
+
+replacing ``<icloud username>`` and ``<icloud password>`` with your iCloud username and
+password.
+
+This will print a list of devices and their IDs; in my case, it prints
+something like this::
+
+    (insert output here)
+
+Find the id of the device you'd like to track location information from, and
+create a cron job running the ``update_icloud_location`` management command::
+
+    python /path/to/your/manage.py update_icloud_location <django username> <icloud username> <icloud password> <device id>
+
+replacing ``<django username>`` with the username of the Django user you'd like
+this location information entered for, ``<icloud username>`` and
+``<icloud password>`` with your iCloud username and password, and
+``<device id>`` with the device ID you gathered using ``list_icloud_devices``.
