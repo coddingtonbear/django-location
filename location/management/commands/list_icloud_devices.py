@@ -6,7 +6,6 @@ class Command(BaseCommand):
     args = '<apple icloud username> <apple icloud password>'
     help = 'List devices associated with this iCloud account'
 
-    @transaction.commit_on_success
     def handle(self, *args, **kwargs):
         icloud_username = args[0]
         icloud_password = args[1]
