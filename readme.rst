@@ -194,7 +194,8 @@ password.
 This will print a list of devices and their IDs; in my case, it prints
 something like this::
 
-    (insert output here)
+    Name: MacBook Air 11": sinclair -- ID: reGYDh9XwqNWTGIhNBuEwP1ds0F/Lg5t/fxNbZ3V939hhXawByErk+HYVNSUzmWV
+    Name: iPhone 4S: Adam Coddingtons iPhone -- ID: i9vbKRGIcLYqJnXMc1b257kUWnoyEBcEh6yM+IfmiMLh7BmOpALU+w==
 
 Find the id of the device you'd like to track location information from, and
 create a cron job running the ``update_icloud_location`` management command::
