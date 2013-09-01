@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.template.response import TemplateResponse
 
 from location.models import (
+    LocationConsumerSettings,
     LocationSnapshot,
     LocationSource,
     LocationSourceType
@@ -81,6 +82,11 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
         return nearest
 
 
+class LocationConsumerSettingsAdmin(admin.options.OSMGeoAdmin):
+    raw_id_fields = ('user', )
+
+
 admin.site.register(LocationSourceType)
 admin.site.register(LocationSource, LocationSourceAdmin)
 admin.site.register(LocationSnapshot, LocationSnapshotAdmin)
+admin.site.register(LocationConsumerSettings, LocationConsumerSettingsAdmin)

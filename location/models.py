@@ -34,23 +34,60 @@ CACHE_PREFIX = getattr(
 )
 
 
+class LocationConsumerSettings(models.Model):
+    user = models.OneToOneField(
+        getattr(
+            settings,
+            'AUTH_USER_MODEL',
+            'auth.User'
+        ),
+        related_name='location_consumer_settings'
+    )
+    icloud_enabled = models.BooleanField(default=False)
+    icloud_username = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    icloud_password = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    icloud_device_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=(
+            "Device ID of the iCloud device from which to gather periodic"
+            "location updates"
+        )
+    )
+    runmeter_enabled = models.BooleanField(default=False)
+    runmeter_email = models.EmailField(
+        max_length=255,
+        help_text=(
+            "E-mail address of the device from which RunMeter will be sending"
+            "location updates"
+        )
+    )
+
+    def __unicode__(self):
+        return "Location Consumer Settings for %s" % (
+            self.user.get_username()
+        )
+
+    class Meta:
+        verbose_name = 'Location Consumer Settings'
+        verbose_name_plural = 'Location Consumer Settings'
+
+
 class LocationSourceType(models.Model):
     name = models.CharField(max_length=255)
     icon = models.ImageField(
         null=True,
         blank=True,
         upload_to='source_type_icons/'
-    )
-    ttl_seconds = models.PositiveIntegerField(
-        default=3600,
-        help_text=(
-            "TTL (Time to live) for coordinates of this type.  Generally, "
-            "this should store the median amount of time between "
-            "individual LocationSnapshot instances of this type.  It is "
-            "additionally used for implied accuracy -- a point with a high "
-            "TTL is expected to be less-accurate than a point with a low "
-            "TTL."
-        )
     )
 
     def __unicode__(self):
@@ -79,7 +116,14 @@ class LocationSource(models.Model):
 
 
 class LocationSnapshot(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(
+        getattr(
+            settings,
+            'AUTH_USER_MODEL',
+            'auth.User'
+        ),
+        related_name='location_snapshots'
+    )
     location = models.PointField(
         geography=True,
         spatial_index=True
