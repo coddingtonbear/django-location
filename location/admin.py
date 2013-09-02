@@ -20,6 +20,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
     list_display = (
         'created',
         'name',
+        'user',
         'type',
         'active'
     )
@@ -27,6 +28,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
         'type'
     ]
     ordering = ['-created']
+    raw_id_fields = ('user', )
 
     def get_urls(self):
         urls = super(LocationSourceAdmin, self).get_urls()
@@ -59,14 +61,17 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
         'date',
         'neighborhood',
         'nearest_city',
-        'user',
     )
     date_hierarchy = 'date'
-    raw_id_fields = ('user', 'source', )
+    raw_id_fields = ('source', )
     list_per_page = 25
     ordering = ['-date']
     list_filter = [
         'source__type'
+    ]
+    search_fields = [
+        'source__type',
+        'source__user__username',
     ]
 
     def nearest_city(self, obj):

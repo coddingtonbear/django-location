@@ -2,12 +2,16 @@ import datetime
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.cache import cache
+from django.dispatch import receiver
 from jsonfield.fields import JSONField
 
+from location.settings import SETTINGS
+
+
 logger = logging.getLogger('location.models')
+
 
 try:
     from census_places.models import PlaceBoundary
@@ -25,13 +29,14 @@ except ImportError:
         "be populated with neighborhood information."
     )
     Neighborhood = None
-
-
-CACHE_PREFIX = getattr(
-    settings,
-    'DJANGO_LOCATION_CACHE_PREFIX',
-    'LOCATION',
-)
+try:
+    from django_mailbox.signals import message_received
+except ImportError:
+    logger.warning(
+        "django-mailbox is not installed, cannot consume messages "
+        "from runmeter."
+    )
+    message_received = None
 
 
 class LocationConsumerSettings(models.Model):
@@ -44,6 +49,12 @@ class LocationConsumerSettings(models.Model):
         related_name='location_consumer_settings'
     )
     icloud_enabled = models.BooleanField(default=False)
+    icloud_timezone = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default='US/Pacific',
+    )
     icloud_username = models.CharField(
         max_length=255,
         blank=True,
@@ -96,6 +107,16 @@ class LocationSourceType(models.Model):
 
 class LocationSource(models.Model):
     name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        getattr(
+            settings,
+            'AUTH_USER_MODEL',
+            'auth.User'
+        ),
+        related_name='location_sources',
+        null=True,
+        default=None,
+    )
     type = models.ForeignKey(LocationSourceType)
     data = JSONField()
     created = models.DateTimeField(
@@ -116,14 +137,6 @@ class LocationSource(models.Model):
 
 
 class LocationSnapshot(models.Model):
-    user = models.ForeignKey(
-        getattr(
-            settings,
-            'AUTH_USER_MODEL',
-            'auth.User'
-        ),
-        related_name='location_snapshots'
-    )
     location = models.PointField(
         geography=True,
         spatial_index=True
@@ -146,7 +159,7 @@ class LocationSnapshot(models.Model):
 
     def get_cache_key(self, name):
         return '%s:%s:%s:%s' % (
-            CACHE_PREFIX,
+            SETTINGS['cache_prefix'],
             self.__class__.__name__,
             self.pk,
             name
@@ -201,6 +214,14 @@ class LocationSnapshot(models.Model):
 
     def __unicode__(self):
         return u"%s's location at %s" % (
-            self.user,
+            self.source.user,
             self.date
         )
+
+
+if message_received:
+    @receiver(message_received, dispatch_uid='process_incoming_runmeter_msg')
+    def process_incoming_runmeter_message(sender, message, **kwargs):
+        from location.consumers.runmeter import RunmeterConsumer
+        if message.mailbox.name == SETTINGS['runmeter_mailbox']:
+            RunmeterConsumer.process_message(message)
