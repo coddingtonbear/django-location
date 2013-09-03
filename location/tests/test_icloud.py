@@ -184,7 +184,7 @@ class iCloudTest(BaseTestCase):
     def test_update_location(self):
         arbitrary_time = datetime.datetime(2013, 3, 2).replace(tzinfo=utc)
         arbitrary_latitude = 100
-        arbitrary_longitude = 200
+        arbitrary_longitude = 120
         mock_location_data = {
             'timeStamp': calendar.timegm(arbitrary_time.timetuple()) * 1000,
             'longitude': arbitrary_longitude,

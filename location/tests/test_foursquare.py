@@ -13,7 +13,7 @@ from location.consumers import foursquare
 class FoursquareTest(BaseTestCase):
     def test_process_checkin(self):
         arbitrary_latitude = 100
-        arbitrary_longitude = 200
+        arbitrary_longitude = 150
         arbitrary_date = datetime.datetime(2013, 3, 2).replace(tzinfo=utc)
         checkin_data = {
             'type': 'checkin',
