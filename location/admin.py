@@ -48,7 +48,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
         logger.info(self.model._meta.app_label)
         return TemplateResponse(
             request,
-            'location/configure.html', {
+            'admin/location/configure.html', {
                 'messages': get_messages(request),
                 'title': 'Configure Accounts',
                 'domain': Site.objects.get_current().domain

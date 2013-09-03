@@ -21,7 +21,7 @@ class LocationSnapshotNode(template.Node):
     def render(self, context):
         try:
             snapshot_query = LocationSnapshot.objects.filter(
-                user__username=self.username
+                source__user__username=self.username
             ).order_by('-date')
             if LOCATION_HOME:
                 snapshot_query = snapshot_query.distance(
