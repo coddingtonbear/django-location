@@ -9,6 +9,7 @@ before_script:
     - psql -U postgres -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
     - psql -U postgres -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
     - psql -U postgres -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+    - createdb -T template_postgis django_location
 python:
     - "2.6"
     - "2.7"
