@@ -4,3 +4,4 @@ jsonfield>=0.9.18
 lxml>=3.0.1
 pytz
 requests>=1.2
+pyicloud
