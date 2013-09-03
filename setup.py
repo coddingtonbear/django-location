@@ -35,6 +35,10 @@ setup(
                 'pyicloud',
             ]
         },
+    tests_require=[
+        'mimic>=0.0.2',
+    ],
+    test_suite='location.runtests.runtests',
     install_requires=requirements,
     packages=[
         'location',

@@ -75,7 +75,6 @@ class iCloudConsumer(object):
                     'settings %s: %s',
                     instance,
                     e
-
                 )
 
     @classmethod

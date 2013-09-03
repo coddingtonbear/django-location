@@ -32,11 +32,8 @@ class FoursquareConsumer(object):
                 ),
                 date=(
                     datetime.datetime.fromtimestamp(
-                        self.data['createdAt']
-                    ).replace(
-                        tzinfo=pytz.timezone(
-                            self.data['timeZone']
-                        )
+                        self.data['createdAt'],
+                        pytz.timezone(self.data['timeZone']),
                     )
                 ),
                 source=source,
