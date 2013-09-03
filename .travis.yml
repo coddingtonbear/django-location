@@ -12,6 +12,7 @@ env:
     - DJANGO=1.5.1 POSTGIS=1.5
 install:
     - pip install -q Django==$DJANGO --use-mirrors
+    - pip install psycopg2
     - pip install -q -e . --use-mirrors
 script:
     - python setup.py test
