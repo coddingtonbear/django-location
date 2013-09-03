@@ -1,7 +1,6 @@
 language: python
 before_script:
     - psql -c 'create database django_location;' -U postgres
-    - createlang -U postgres plpgsql django_location
     - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
     - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
 python:
