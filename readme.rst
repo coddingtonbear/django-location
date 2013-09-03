@@ -113,6 +113,17 @@ API; here's a fleshed-out version::
 Location Sources
 ----------------
 
+For some of the below consumers, iCloud and Runmeter specifically, you will
+need to set up a cron job that will handle certain periodic tasks, you can
+do this by adding a cron job running::
+
+    python /path/to/your/manage.py location_consumer
+
+I'd suggest running this at five or ten minute intervals, but selecting longer
+intervals will have only minor effects; either reducing sample frequency 
+(in the case of the iCloud consumer) or increasing update latency (in the
+case of the Runmeter consumer).
+
 Foursquare
 ~~~~~~~~~~
 
@@ -176,13 +187,13 @@ that allows you to request your device's location at-will.  This library
 provides you with an easy way to use this service's location information
 as one of your location sources.
 
-1. Ientify the devices associated with your account, you can
+1. Identify the devices associated with your account, you can
    do that by using the ``list_icloud_devices`` management command::
 
     python /path/to/your/manage.py list_icloud_devices <icloud username> <icloud password>
 
-   replacing ``<icloud username>`` and ``<icloud password>`` with your iCloud username and
-   password.
+   replacing ``<icloud username>`` and ``<icloud password>`` with your
+   iCloud username and password.
    
    This will print a list of devices and their IDs; in my case, it prints
    something like this::
