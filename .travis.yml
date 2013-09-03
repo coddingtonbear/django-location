@@ -1,5 +1,7 @@
 language: python
 before_script:
+    - sudo apt-get update
+    - sudo apt-get install -qq libgeos-dev libproj-dev postgresql-9.1-postgis
     - psql -c 'create database django_location;' -U postgres
     - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
     - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
