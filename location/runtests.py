@@ -27,6 +27,7 @@ if not settings.configured:
             }
         }
     settings.configure(
+        POSTGIS_VERSION=(1, 5, 3),
         DATABASES=DATABASES,
         INSTALLED_APPS=[
             'django.contrib.auth',
