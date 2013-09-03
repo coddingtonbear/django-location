@@ -1,3 +1,6 @@
+.. image:: https://travis-ci.org/latestrevision/django-location.png?branch=master
+   :target: https://travis-ci.org/latestrevision/django-location
+
 django-location
 ===============
 
