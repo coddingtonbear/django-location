@@ -1,32 +1,30 @@
 #!/usr/bin/env python
+import os
 import sys
 
 from os.path import dirname, abspath
 
 from django.conf import settings
 
-
-LOCAL_TESTING = False
-if '--local' in sys.argv:
-    LOCAL_TESTING = True
-    sys.argv.remove('--local')
-
+TRAVIS = False
+if os.environ.get('TRAVIS') is not None:
+    TRAVIS = True
 
 if not settings.configured:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'django_location',
-            'USERNAME': 'postgres',
-            'HOST': '127.0.0.1'
-        }
+            'ENGINE': 'django.contrib.gis.db.backends.spatialite',
+            'NAME': ':memory:'
+        },
     }
-    if LOCAL_TESTING:
+    if TRAVIS:
         DATABASES = {
             'default': {
-                'ENGINE': 'django.contrib.gis.db.backends.spatialite',
-                'NAME': ':memory:'
-            },
+                'ENGINE': 'django.contrib.gis.db.backends.postgis',
+                'NAME': 'django_location',
+                'USERNAME': 'postgres',
+                'HOST': '127.0.0.1'
+            }
         }
     settings.configure(
         DATABASES=DATABASES,
@@ -47,7 +45,7 @@ def runtests(*test_args):
     parent = dirname(abspath(__file__))
     sys.path.insert(0, parent)
 
-    if LOCAL_TESTING:
+    if not TRAVIS:
         from django.db import connection
         cursor = connection.cursor()
         cursor.execute("SELECT InitSpatialMetaData();")
