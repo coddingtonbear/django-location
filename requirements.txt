@@ -6,3 +6,4 @@ pytz
 requests>=1.2
 pyicloud_dwoh>=0.3
 django-mailbox>=3.0.1
+Pillow>=1.7.7
