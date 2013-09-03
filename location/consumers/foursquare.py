@@ -1,6 +1,8 @@
+import datetime
 import json
 
 from django.contrib.gis.geos import Point
+import pytz
 from social_auth.models import UserSocialAuth
 
 from location.models import (
@@ -27,6 +29,15 @@ class FoursquareConsumer(object):
                 location=Point(
                     self.data['venue']['location']['lng'],
                     self.data['venue']['location']['lat'],
+                ),
+                date=(
+                    datetime.datetime.fromtimestamp(
+                        self.data['createdAt']
+                    ).replace(
+                        tzinfo=pytz.timezone(
+                            self.data['timeZone']
+                        )
+                    )
                 ),
                 source=source,
             )
