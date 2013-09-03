@@ -20,7 +20,7 @@ if not settings.configured:
     if TRAVIS:
         DATABASES = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+                'ENGINE': 'django.contrib.gis.db.backends.postgis',
                 'NAME': 'django_location',
                 'USERNAME': 'postgres',
                 'HOST': '127.0.0.1'
@@ -35,12 +35,6 @@ if not settings.configured:
         ],
         USE_TZ=True,
     )
-    if TRAVIS:
-        # Disable PostGIS
-        from django.contrib.gis.db import gis_models
-        from django.db import models
-        gis_models.Model = models.Model
-        gis_models.GeoManager = models.Manager
 
 from django.test.simple import DjangoTestSuiteRunner
 
