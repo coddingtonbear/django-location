@@ -1,18 +1,14 @@
 language: python
 before_script:
-    - sudo apt-get update
-    - sudo apt-get install -qq libgeos-dev libproj-dev postgresql-9.1-postgis
     - psql -c 'create database django_location;' -U postgres
-    - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
-    - psql -U postgres -d django_location -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
 python:
     - "2.6"
     - "2.7"
 env:
-    - DJANGO=1.5.1 POSTGIS=1.5
+    - DJANGO=1.5.1
 install:
-    - pip install -q Django==$DJANGO --use-mirrors
     - pip install psycopg2
+    - pip install -q Django==$DJANGO --use-mirrors
     - pip install -q -e . --use-mirrors
 script:
     - python setup.py test
