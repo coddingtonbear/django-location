@@ -1,13 +1,14 @@
 language: python
-before_install: 
-    - sudo apt-get install libspatialite-dev
+before_script:
+    - psql -c 'create database django_location;' -U postgres
+    - createlang -U postgres plpgsql postgis_adapter_test
+    - psql -U postgres -d postgis_adapter_test -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+    - psql -U postgres -d postgis_adapter_test -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
 python:
     - "2.6"
     - "2.7"
-    - "3.2"
 env:
-    - DJANGO=1.5.1
-    - POSTGIS=2.0
+    - DJANGO=1.5.1 POSTGIS=1.5
 install:
     - pip install -q Django==$DJANGO --use-mirrors
     - pip install -q -e . --use-mirrors

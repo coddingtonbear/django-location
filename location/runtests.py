@@ -16,7 +16,7 @@ if not settings.configured:
     DATABASES = {
         'default': {
             'ENGINE': 'django.contrib.gis.db.backends.postgis',
-            'NAME': 'postgis_adapter_test',
+            'NAME': 'django_location',
             'USERNAME': 'postgres',
             'HOST': '127.0.0.1'
         }
