@@ -5,14 +5,31 @@ from os.path import dirname, abspath
 
 from django.conf import settings
 
+
+LOCAL_TESTING = False
+if '--local' in sys.argv:
+    LOCAL_TESTING = True
+    sys.argv.remove('--local')
+
+
 if not settings.configured:
-    settings.configure(
-        DATABASES={
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.contrib.gis.db.backends.postgis',
+            'NAME': 'postgis_adapter_test',
+            'USERNAME': 'postgres',
+            'HOST': '127.0.0.1'
+        }
+    }
+    if LOCAL_TESTING:
+        DATABASES = {
             'default': {
                 'ENGINE': 'django.contrib.gis.db.backends.spatialite',
                 'NAME': ':memory:'
             },
-        },
+        }
+    settings.configure(
+        DATABASES=DATABASES,
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
@@ -30,9 +47,10 @@ def runtests(*test_args):
     parent = dirname(abspath(__file__))
     sys.path.insert(0, parent)
 
-    from django.db import connection
-    cursor = connection.cursor()
-    cursor.execute("SELECT InitSpatialMetaData();")
+    if LOCAL_TESTING:
+        from django.db import connection
+        cursor = connection.cursor()
+        cursor.execute("SELECT InitSpatialMetaData();")
 
     runner = DjangoTestSuiteRunner(
         verbosity=1,
