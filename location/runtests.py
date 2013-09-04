@@ -32,6 +32,7 @@ if not settings.configured:
         INSTALLED_APPS=[
             'django.contrib.auth',
             'django.contrib.contenttypes',
+            'django_mailbox',
             'location',
         ],
         USE_TZ=True,

@@ -26,7 +26,7 @@ class RunmeterConsumer(object):
     }
 
     def __init__(self, source):
-        self.source
+        self.source = source
 
     @classmethod
     def periodic(cls):
@@ -36,7 +36,7 @@ class RunmeterConsumer(object):
     def process_message(cls, message):
         settings = LocationConsumerSettings.objects.get(
             runmeter_enabled=True,
-            runmeter_email=message.from_address,
+            runmeter_email=message.from_address[0],
         )
 
         url = cls.get_import_url_from_message_body(message.text)
@@ -47,6 +47,9 @@ class RunmeterConsumer(object):
 
         instance = RunmeterConsumer(source)
         instance.process()
+
+        message.read = datetime.datetime.utcnow().replace(tzinfo=utc)
+        message.save()
 
         return instance
 

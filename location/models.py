@@ -224,4 +224,11 @@ if message_received:
     def process_incoming_runmeter_message(sender, message, **kwargs):
         from location.consumers.runmeter import RunmeterConsumer
         if message.mailbox.name == SETTINGS['runmeter_mailbox']:
-            RunmeterConsumer.process_message(message)
+            try:
+                RunmeterConsumer.process_message(message)
+            except LocationConsumerSettings.DoesNotExist:
+                logger.warning(
+                    'Unable to process message \'%s\': '
+                    'No user is currently assigned to from_address %s',
+                    message.from_address
+                )
