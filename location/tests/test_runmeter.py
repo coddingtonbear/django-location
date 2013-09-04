@@ -1,8 +1,11 @@
 import datetime
+import json
+import os.path
 
 from django.contrib.gis.geos import Point
 from django.utils.timezone import utc
 from django_mailbox.models import Mailbox, Message
+from lxml import objectify
 from mock import MagicMock
 
 from location import models
@@ -23,6 +26,14 @@ class RunmeterTest(BaseTestCase):
             name='My Mailbox',
         )
         self.source_type = RunmeterConsumer.get_source_type()
+
+    def _get_sample_document(self):
+        file_path = os.path.join(
+            os.path.dirname(__file__),
+            'files/sample_cycle.kml',
+        )
+        with open(file_path, 'r') as incoming:
+            return objectify.fromstring(incoming.read())
 
     def test_process_message(self):
         arbitrary_body = 'I am the very model of a modern major general'
@@ -57,6 +68,49 @@ class RunmeterTest(BaseTestCase):
         RunmeterConsumer.get_source_from_user_and_url.assert_called_with(
             self.settings.user,
             arbitrary_url,
+        )
+
+    def test_get_route_name(self):
+        document = self._get_sample_document()
+        consumer = RunmeterConsumer(None)
+        actual_value = consumer.get_route_name(document)
+        expected_value = 'Cycle'
+
+        self.assertEqual(
+            actual_value,
+            expected_value,
+        )
+
+    def test_get_start_time(self):
+        document = self._get_sample_document()
+        consumer = RunmeterConsumer(None)
+        actual_value = consumer.get_start_time(document)
+        expected_value = datetime.datetime(2013, 9, 6, 0, 51, 29).replace(
+            tzinfo=utc
+        )
+
+        self.assertEqual(
+            actual_value,
+            expected_value,
+        )
+
+    def test_get_points(self):
+        arbitrary_time = datetime.datetime.utcnow().replace(tzinfo=utc)
+        document = self._get_sample_document()
+        consumer = RunmeterConsumer(None)
+        actual_value = consumer.get_points(document, arbitrary_time)
+
+        with open(
+            os.path.join(
+                os.path.dirname(__file__),
+                'files/expected_points.json',
+            )
+        ) as incoming:
+            expected_value = json.loads(incoming.read())
+
+        self.assertEqual(
+            actual_value,
+            expected_value,
         )
 
     def test_process(self):

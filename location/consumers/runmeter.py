@@ -105,7 +105,7 @@ class RunmeterConsumer(object):
                 self.source.data['url']
             )
         if self.source.active:
-            self.source.active = self.is_active(document)
+            self.source.active = self.is_active()
             if not self.source.active:
                 logger.debug('Source has expired; marked inactive.')
         self.source.save()
@@ -142,7 +142,7 @@ class RunmeterConsumer(object):
         points = []
         coordinate_table = document.xpath(
             '//abvio:coordinateTable',
-            namespaces=self.namespaces
+            namespaces=self.NAMESPACES
         )[0].text.split('\n')
         for coordinate_row in coordinate_table:
             if coordinate_row:
@@ -208,7 +208,7 @@ class RunmeterConsumer(object):
             logger.info("Created new source with ID %s.", source.id)
         return source
 
-    def is_active(self, document):
+    def is_active(self):
         max_date = self.source.points.aggregate(avg=Max('date'))['avg']
         now = datetime.datetime.utcnow().replace(tzinfo=utc)
         logger.debug("Max Date %s", max_date)

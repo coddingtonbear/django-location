@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 requirements = []
 with open('requirements.txt', 'r') as in_:
@@ -21,30 +21,15 @@ setup(
     ],
     include_package_data=True,
     extras_require={
-            'locationdetails': [
-                'django-neighborhoods',
-                'django-census-places',
-            ],
-            'runmeter': [
-                'django-mailbox',
-            ],
-            'kml': [
-                'pykml',
-            ],
-            'icloud': [
-                'pyicloud',
-            ]
-        },
+        'locationdetails': [
+            'django-neighborhoods',
+            'django-census-places',
+        ],
+    },
     tests_require=[
         'mock>=1.0.1',
     ],
     test_suite='location.runtests.runtests',
     install_requires=requirements,
-    packages=[
-        'location',
-        'location.management',
-        'location.management.commands',
-        'location.migrations',
-        'location.templatetags',
-    ],
+    packages=find_packages()
 )
