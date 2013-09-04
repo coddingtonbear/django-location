@@ -29,9 +29,6 @@ class iCloudTest(BaseTestCase):
         icloud.SETTINGS['icloud']['request_interval_seconds'] = 0.1
         self.icloud_consumer = icloud.iCloudConsumer(self.user_settings)
 
-    def test_periodic(self):
-        pass
-
     def test_get_location_data_unknown_device_id(self):
         with patch('pyicloud.PyiCloudService.__init__') as init_mock:
             init_mock.return_value = None
