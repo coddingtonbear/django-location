@@ -4,6 +4,7 @@ import json
 
 from django.contrib.gis.geos import Point
 from django.utils.timezone import utc
+from mock import MagicMock
 
 from location import models
 from location.tests.base import BaseTestCase
@@ -27,13 +28,9 @@ class FoursquareTest(BaseTestCase):
             'createdAt': calendar.timegm(arbitrary_date.timetuple()),
             'timeZone': 'UTC'
         }
-        self.mimic.stub_out_with_mock(
-            foursquare.FoursquareConsumer,
-            'get_user'
-        )
-        foursquare.FoursquareConsumer.get_user().and_return(self.user)
 
-        self.mimic.replay_all()
+        foursquare.FoursquareConsumer.get_user = MagicMock()
+        foursquare.FoursquareConsumer.get_user.return_value = self.user
 
         self.foursquare_consumer = foursquare.FoursquareConsumer(
             json.dumps(checkin_data)

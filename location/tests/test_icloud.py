@@ -3,6 +3,7 @@ import datetime
 
 from django.contrib.gis.geos import Point
 from django.utils.timezone import utc
+from mock import MagicMock, patch
 import pyicloud
 
 from location import models
@@ -32,82 +33,57 @@ class iCloudTest(BaseTestCase):
         pass
 
     def test_get_location_data_unknown_device_id(self):
-        self.mimic.stub_out_with_mock(pyicloud.PyiCloudService, '__init__')
-        pyicloud.PyiCloudService.__init__(
-            self.arbitrary_username,
-            self.arbitrary_password,
-        )
-        pyicloud.PyiCloudService.devices = {}
+        with patch('pyicloud.PyiCloudService.__init__') as init_mock:
+            init_mock.return_value = None
 
-        self.mimic.replay_all()
+            pyicloud.PyiCloudService.devices = {}
 
-        with self.assertRaises(icloud.UnknownDeviceException):
-            self.icloud_consumer.get_location_data()
+            with self.assertRaises(icloud.UnknownDeviceException):
+                self.icloud_consumer.get_location_data()
 
     def test_get_location_data(self):
         arbitrary_location_data = {
             'somewhere': 'around',
             'here': True
         }
-        self.mimic.stub_out_with_mock(pyicloud.PyiCloudService, '__init__')
-        pyicloud.PyiCloudService.__init__(
-            self.arbitrary_username,
-            self.arbitrary_password,
-        )
-        mock_device = self.mimic.CreateMockAnything()
-        pyicloud.PyiCloudService.devices = {}
-        pyicloud.PyiCloudService.devices[self.arbitrary_device_id] = (
-            mock_device
-        )
-        self.mimic.stub_out_with_mock(
-            self.icloud_consumer,
-            'data_is_accurate'
-        )
-        self.icloud_consumer.data_is_accurate(
-            arbitrary_location_data
-        ).and_return(True)
+        with patch('pyicloud.PyiCloudService.__init__') as init_mock:
+            init_mock.return_value = None
+            mock_device = MagicMock()
+            mock_device.location.return_value = arbitrary_location_data
+            pyicloud.PyiCloudService.devices = {}
+            pyicloud.PyiCloudService.devices[self.arbitrary_device_id] = (
+                mock_device
+            )
+            self.icloud_consumer.data_is_accurate = MagicMock()
+            self.icloud_consumer.data_is_accurate.return_value = True
 
-        mock_device.location().and_return(arbitrary_location_data)
+            actual_data = self.icloud_consumer.get_location_data()
 
-        self.mimic.replay_all()
+            mock_device.location.assert_called_with()
 
-        actual_data = self.icloud_consumer.get_location_data()
-
-        self.assertEqual(
-            actual_data,
-            arbitrary_location_data
-        )
+            self.assertEqual(
+                actual_data,
+                arbitrary_location_data
+            )
 
     def test_get_location_data_inaccurate(self):
         arbitrary_location_data = {
             'somewhere': 'around',
             'here': True
         }
-        self.mimic.stub_out_with_mock(pyicloud.PyiCloudService, '__init__')
-        pyicloud.PyiCloudService.__init__(
-            self.arbitrary_username,
-            self.arbitrary_password,
-        )
-        mock_device = self.mimic.CreateMockAnything()
-        pyicloud.PyiCloudService.devices = {}
-        pyicloud.PyiCloudService.devices[self.arbitrary_device_id] = (
-            mock_device
-        )
-        mock_device.location().multiple_times().and_return(
-            arbitrary_location_data
-        )
-        self.mimic.stub_out_with_mock(
-            self.icloud_consumer,
-            'data_is_accurate'
-        )
-        self.icloud_consumer.data_is_accurate(
-            arbitrary_location_data
-        ).multiple_times().and_return(False)
+        with patch('pyicloud.PyiCloudService.__init__') as init_mock:
+            init_mock.return_value = None
+            mock_device = MagicMock()
+            mock_device.location.return_value = arbitrary_location_data
+            pyicloud.PyiCloudService.devices = {}
+            pyicloud.PyiCloudService.devices[self.arbitrary_device_id] = (
+                mock_device
+            )
+            self.icloud_consumer.data_is_accurate = MagicMock()
+            self.icloud_consumer.data_is_accurate.return_value = False
 
-        self.mimic.replay_all()
-
-        with self.assertRaises(icloud.LocationUnavailableException):
-            self.icloud_consumer.get_location_data()
+            with self.assertRaises(icloud.LocationUnavailableException):
+                self.icloud_consumer.get_location_data()
 
     def test_data_is_accurate(self):
         accurate_data = {
@@ -191,12 +167,10 @@ class iCloudTest(BaseTestCase):
             'latitude': arbitrary_latitude,
         }
 
-        self.mimic.stub_out_with_mock(
-            self.icloud_consumer, 'get_location_data'
+        self.icloud_consumer.get_location_data = MagicMock()
+        self.icloud_consumer.get_location_data.return_value = (
+            mock_location_data
         )
-        self.icloud_consumer.get_location_data().and_return(mock_location_data)
-
-        self.mimic.replay_all()
 
         self.icloud_consumer.update_location()
 

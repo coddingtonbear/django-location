@@ -36,7 +36,7 @@ setup(
             ]
         },
     tests_require=[
-        'mimic>=0.0.2',
+        'mock>=1.0.1',
     ],
     test_suite='location.runtests.runtests',
     install_requires=requirements,
