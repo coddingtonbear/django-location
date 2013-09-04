@@ -19,14 +19,15 @@ class FoursquareConsumer(object):
 
     def process_checkin(self):
         if self.data['type'] == 'checkin':
+            user = self.get_user()
             source = LocationSource.objects.create(
                 name=self.data['venue']['name'],
-                user=self.get_user(),
+                user=user,
                 type=self.get_source_type(),
                 data=self.data
             )
 
-            with watch_location(self.user_settings.user):
+            with watch_location(user):
                 return LocationSnapshot.objects.create(
                     location=Point(
                         self.data['venue']['location']['lng'],

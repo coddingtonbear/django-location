@@ -34,6 +34,7 @@ class watch_location(object):
                 to=current_location,
             )
             if (
+                self.original_location and
                 self.original_location.location
                 != current_location.location
             ):
