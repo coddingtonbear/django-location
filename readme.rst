@@ -53,11 +53,6 @@ installed:
 -  `django-neighborhoods <http://bitbucket.org/latestrevision/django-neighborhoods/>`__
 -  `django-census-places <http://bitbucket.org/latestrevision/django-census-places/>`__
 
-If you'd like to consume Runmeter information, you'll need:
-
--  `django-mailbox <http://bitbucket.org/latestrevision/django-mailbox/>`__
-   (for reading incoming e-mail messages sent from the Runmeter app)
-
 Displaying Location Using a Template Tag
 ----------------------------------------
 
@@ -207,3 +202,4 @@ as one of your location sources.
 2. Update users' Location Consumer Settings records to include the user's
    ``iCloud username``, ``iCloud password``, and ``iCloud device ID`` from
    which you would like to gather location information.
+
