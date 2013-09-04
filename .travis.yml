@@ -1,0 +1,23 @@
+language: python
+before_script:
+    - sudo apt-get update
+    - sudo apt-get install -qq libgeos-dev libproj-dev postgresql-9.1-postgis
+    - createdb -E UTF8 template_postgis
+    - psql -U postgres -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
+    - psql -U postgres -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
+    - psql -U postgres -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-1.5/spatial_ref_sys.sql
+    - psql -U postgres -d template_postgis -c "GRANT ALL ON geometry_columns TO PUBLIC;"
+    - psql -U postgres -d template_postgis -c "GRANT ALL ON geography_columns TO PUBLIC;"
+    - psql -U postgres -d template_postgis -c "GRANT ALL ON spatial_ref_sys TO PUBLIC;"
+    - createdb -T template_postgis django_location
+python:
+    - "2.6"
+    - "2.7"
+env:
+    - DJANGO=1.5.1
+install:
+    - pip install psycopg2
+    - pip install -q Django==$DJANGO --use-mirrors
+    - pip install -q -e . --use-mirrors
+script:
+    - python setup.py test

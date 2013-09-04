@@ -7,6 +7,7 @@ from django.contrib.sites.models import Site
 from django.template.response import TemplateResponse
 
 from location.models import (
+    LocationConsumerSettings,
     LocationSnapshot,
     LocationSource,
     LocationSourceType
@@ -19,6 +20,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
     list_display = (
         'created',
         'name',
+        'user',
         'type',
         'active'
     )
@@ -26,6 +28,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
         'type'
     ]
     ordering = ['-created']
+    raw_id_fields = ('user', )
 
     def get_urls(self):
         urls = super(LocationSourceAdmin, self).get_urls()
@@ -45,7 +48,7 @@ class LocationSourceAdmin(admin.options.OSMGeoAdmin):
         logger.info(self.model._meta.app_label)
         return TemplateResponse(
             request,
-            'location/configure.html', {
+            'admin/location/configure.html', {
                 'messages': get_messages(request),
                 'title': 'Configure Accounts',
                 'domain': Site.objects.get_current().domain
@@ -58,14 +61,17 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
         'date',
         'neighborhood',
         'nearest_city',
-        'user',
     )
     date_hierarchy = 'date'
-    raw_id_fields = ('user', 'source', )
+    raw_id_fields = ('source', )
     list_per_page = 25
     ordering = ['-date']
     list_filter = [
         'source__type'
+    ]
+    search_fields = [
+        'source__type',
+        'source__user__username',
     ]
 
     def nearest_city(self, obj):
@@ -81,6 +87,11 @@ class LocationSnapshotAdmin(admin.options.OSMGeoAdmin):
         return nearest
 
 
+class LocationConsumerSettingsAdmin(admin.options.OSMGeoAdmin):
+    raw_id_fields = ('user', )
+
+
 admin.site.register(LocationSourceType)
 admin.site.register(LocationSource, LocationSourceAdmin)
 admin.site.register(LocationSnapshot, LocationSnapshotAdmin)
+admin.site.register(LocationConsumerSettings, LocationConsumerSettingsAdmin)

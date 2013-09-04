@@ -1,21 +1,18 @@
+.. image:: https://travis-ci.org/latestrevision/django-location.png?branch=master
+   :target: https://travis-ci.org/latestrevision/django-location
+
 django-location
 ===============
 
 Do you check-in on `Foursquare <http://foursquare.com/>`__? Do you track
 your runs or bike commutes with
 `Runmeter <http://www.abvio.com/runmeter/>`__? Do you use an IOS device?
-Why let third-party interfaces be your window into your day-to-day
+Why let third-party interfaces be your only window into your day-to-day
 movements?
 
 This Django application will consume location information provided by
 Foursquare, iCloud, and, if you happen to be a user of it, Runmeter, and
 store it in your database for display at will.
-
-**Note**: Although this library will allow you to consume location
-information from Google Latitude, Google has announced that they will be
-discontinuing their Latitude service as of August 9th. If you are using
-an IOS device, consider switching to the (higher quality) iCloud
-location consumer.
 
 Installation
 ------------
@@ -119,6 +116,17 @@ API; here's a fleshed-out version::
 Location Sources
 ----------------
 
+For some of the below consumers, iCloud and Runmeter specifically, you will
+need to set up a cron job that will handle certain periodic tasks, you can
+do this by adding a cron job running::
+
+    python /path/to/your/manage.py location_consumer
+
+I'd suggest running this at five or ten minute intervals, but selecting longer
+intervals will have only minor effects; either reducing sample frequency 
+(in the case of the iCloud consumer) or increasing update latency (in the
+case of the Runmeter consumer).
+
 Foursquare
 ~~~~~~~~~~
 
@@ -170,10 +178,9 @@ from the linked-to KML file.
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult
    `django-mailbox's
    documentation <http://bitbucket.org/latestrevision/django-mailbox/>`__).
-3. Wire up a cron job.
-
-   -  Instruct the cron job to run
-      ``python /path/to/your/manage.py check_incoming_runmeter <name of mailbox>``
+3. Update users' Location Consumer Settings record to set the field 
+   ``runmeter_email`` to match the e-mail address from which a user's device
+   will be sending Runmeter updates.
 
 iCloud
 ~~~~~~
@@ -183,26 +190,20 @@ that allows you to request your device's location at-will.  This library
 provides you with an easy way to use this service's location information
 as one of your location sources.
 
-First, you need to identify the devices associated with your account, you can
-do that by using the ``list_icloud_devices`` management command::
+1. Identify the devices associated with your account, you can
+   do that by using the ``list_icloud_devices`` management command::
 
     python /path/to/your/manage.py list_icloud_devices <icloud username> <icloud password>
 
-replacing ``<icloud username>`` and ``<icloud password>`` with your iCloud username and
-password.
-
-This will print a list of devices and their IDs; in my case, it prints
-something like this::
+   replacing ``<icloud username>`` and ``<icloud password>`` with your
+   iCloud username and password.
+   
+   This will print a list of devices and their IDs; in my case, it prints
+   something like this::
 
     Name: MacBook Air 11": sinclair -- ID: reGYDh9XwqNWTGIhNBuEwP1ds0F/Lg5t/fxNbZ3V939hhXawByErk+HYVNSUzmWV
     Name: iPhone 4S: Adam Coddingtons iPhone -- ID: i9vbKRGIcLYqJnXMc1b257kUWnoyEBcEh6yM+IfmiMLh7BmOpALU+w==
 
-Find the id of the device you'd like to track location information from, and
-create a cron job running the ``update_icloud_location`` management command::
-
-    python /path/to/your/manage.py update_icloud_location <django username> <icloud username> <icloud password> <device id>
-
-replacing ``<django username>`` with the username of the Django user you'd like
-this location information entered for, ``<icloud username>`` and
-``<icloud password>`` with your iCloud username and password, and
-``<device id>`` with the device ID you gathered using ``list_icloud_devices``.
+2. Update users' Location Consumer Settings records to include the user's
+   ``iCloud username``, ``iCloud password``, and ``iCloud device ID`` from
+   which you would like to gather location information.

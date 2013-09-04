@@ -2,12 +2,17 @@ import datetime
 import logging
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.cache import cache
+from django.dispatch import receiver
+from django_mailbox.signals import message_received
 from jsonfield.fields import JSONField
 
+from location.settings import SETTINGS
+
+
 logger = logging.getLogger('location.models')
+
 
 try:
     from census_places.models import PlaceBoundary
@@ -27,11 +32,58 @@ except ImportError:
     Neighborhood = None
 
 
-CACHE_PREFIX = getattr(
-    settings,
-    'DJANGO_LOCATION_CACHE_PREFIX',
-    'LOCATION',
-)
+class LocationConsumerSettings(models.Model):
+    user = models.OneToOneField(
+        getattr(
+            settings,
+            'AUTH_USER_MODEL',
+            'auth.User'
+        ),
+        related_name='location_consumer_settings'
+    )
+    icloud_enabled = models.BooleanField(default=False)
+    icloud_timezone = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        default='US/Pacific',
+    )
+    icloud_username = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    icloud_password = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+    )
+    icloud_device_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text=(
+            "Device ID of the iCloud device from which to gather periodic"
+            "location updates"
+        )
+    )
+    runmeter_enabled = models.BooleanField(default=False)
+    runmeter_email = models.EmailField(
+        max_length=255,
+        help_text=(
+            "E-mail address of the device from which RunMeter will be sending"
+            "location updates"
+        )
+    )
+
+    def __unicode__(self):
+        return "Location Consumer Settings for %s" % (
+            self.user.get_username()
+        )
+
+    class Meta:
+        verbose_name = 'Location Consumer Settings'
+        verbose_name_plural = 'Location Consumer Settings'
 
 
 class LocationSourceType(models.Model):
@@ -41,17 +93,6 @@ class LocationSourceType(models.Model):
         blank=True,
         upload_to='source_type_icons/'
     )
-    ttl_seconds = models.PositiveIntegerField(
-        default=3600,
-        help_text=(
-            "TTL (Time to live) for coordinates of this type.  Generally, "
-            "this should store the median amount of time between "
-            "individual LocationSnapshot instances of this type.  It is "
-            "additionally used for implied accuracy -- a point with a high "
-            "TTL is expected to be less-accurate than a point with a low "
-            "TTL."
-        )
-    )
 
     def __unicode__(self):
         return self.name
@@ -59,6 +100,16 @@ class LocationSourceType(models.Model):
 
 class LocationSource(models.Model):
     name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        getattr(
+            settings,
+            'AUTH_USER_MODEL',
+            'auth.User'
+        ),
+        related_name='location_sources',
+        null=True,
+        default=None,
+    )
     type = models.ForeignKey(LocationSourceType)
     data = JSONField()
     created = models.DateTimeField(
@@ -79,7 +130,6 @@ class LocationSource(models.Model):
 
 
 class LocationSnapshot(models.Model):
-    user = models.ForeignKey(User)
     location = models.PointField(
         geography=True,
         spatial_index=True
@@ -102,7 +152,7 @@ class LocationSnapshot(models.Model):
 
     def get_cache_key(self, name):
         return '%s:%s:%s:%s' % (
-            CACHE_PREFIX,
+            SETTINGS['cache_prefix'],
             self.__class__.__name__,
             self.pk,
             name
@@ -157,6 +207,20 @@ class LocationSnapshot(models.Model):
 
     def __unicode__(self):
         return u"%s's location at %s" % (
-            self.user,
+            self.source.user,
             self.date
         )
+
+
+@receiver(message_received, dispatch_uid='process_incoming_runmeter_msg')
+def process_incoming_runmeter_message(sender, message, **kwargs):
+    from location.consumers.runmeter import RunmeterConsumer
+    if message.mailbox.name == SETTINGS['runmeter_mailbox']:
+        try:
+            RunmeterConsumer.process_message(message)
+        except LocationConsumerSettings.DoesNotExist:
+            logger.warning(
+                'Unable to process message \'%s\': '
+                'No user is currently assigned to from_address %s',
+                message.from_address
+            )

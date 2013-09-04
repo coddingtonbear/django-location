@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 requirements = []
 with open('requirements.txt', 'r') as in_:
@@ -6,7 +6,7 @@ with open('requirements.txt', 'r') as in_:
 
 setup(
     name='django-location',
-    version='1.6',
+    version='2.0a1',
     url='http://bitbucket.org/latestrevision/django-location/',
     description='Gather, store, and display real-time location information from Foursquare, iCloud, and more.',
     author='Adam Coddington',
@@ -21,26 +21,15 @@ setup(
     ],
     include_package_data=True,
     extras_require={
-            'locationdetails': [
-                'django-neighborhoods',
-                'django-census-places',
-            ],
-            'runmeter': [
-                'django-mailbox',
-            ],
-            'kml': [
-                'pykml',
-            ],
-            'icloud': [
-                'pyicloud',
-            ]
-        },
-    install_requires=requirements,
-    packages=[
-        'location',
-        'location.management',
-        'location.management.commands',
-        'location.migrations',
-        'location.templatetags',
+        'locationdetails': [
+            'django-neighborhoods',
+            'django-census-places',
+        ],
+    },
+    tests_require=[
+        'mock>=1.0.1',
     ],
+    test_suite='location.runtests.runtests',
+    install_requires=requirements,
+    packages=find_packages()
 )

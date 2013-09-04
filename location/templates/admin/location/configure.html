@@ -36,14 +36,4 @@
         </table>
         <input type="submit" value="Authorize Foursquare">
     </form>
-    <h2>Google Latitude Configuration</h2>
-    <form action="{% url 'socialauth_begin' "google-oauth2" %}" method="GET">
-        <table>
-            <tr>
-                <th>Callback URL</th>
-                <td>http://{{ domain }}{% url 'socialauth_complete' 'google-oauth2' %}</td>
-            </tr>
-        </table>
-        <input type="submit" value="Authorize Google OAuth2">
-    </form>
 {% endblock %} 
