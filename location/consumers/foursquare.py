@@ -10,6 +10,7 @@ from location.models import (
     LocationSource,
     LocationSourceType
 )
+from location.signals import watch_location
 
 
 class FoursquareConsumer(object):
@@ -25,19 +26,20 @@ class FoursquareConsumer(object):
                 data=self.data
             )
 
-            return LocationSnapshot.objects.create(
-                location=Point(
-                    self.data['venue']['location']['lng'],
-                    self.data['venue']['location']['lat'],
-                ),
-                date=(
-                    datetime.datetime.fromtimestamp(
-                        self.data['createdAt'],
-                        pytz.timezone(self.data['timeZone']),
-                    )
-                ),
-                source=source,
-            )
+            with watch_location(self.user_settings.user):
+                return LocationSnapshot.objects.create(
+                    location=Point(
+                        self.data['venue']['location']['lng'],
+                        self.data['venue']['location']['lat'],
+                    ),
+                    date=(
+                        datetime.datetime.fromtimestamp(
+                            self.data['createdAt'],
+                            pytz.timezone(self.data['timeZone']),
+                        )
+                    ),
+                    source=source,
+                )
         return None
 
     def get_user(self):

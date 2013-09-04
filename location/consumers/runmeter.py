@@ -14,6 +14,7 @@ from location.models import (
     LocationSource,
     LocationSourceType
 )
+from location.signals import watch_location
 
 
 logger = logging.getLogger(__name__)
@@ -74,30 +75,31 @@ class RunmeterConsumer(object):
         base_time = self.get_start_time(document)
         route_name = self.get_route_name(document)
 
-        for raw_point in self.get_points(document):
-            key_name = raw_point['key']
-            if isinstance(self.source.data['known_points'], list):
-                self.source.data['known_points'] = {}
-            if key_name not in self.source.data['known_points']:
-                point = self._get_processed_point(raw_point, base_time)
-                logger.debug(
-                    'Creating point %s,%s at %s.',
-                    point['lat'],
-                    point['lng'],
-                    point['date'],
-                )
-                LocationSnapshot.objects.create(
-                    source=self.source,
-                    location=point['point'],
-                    date=point['date'],
-                )
-                self.source.data['known_points'][key_name] = raw_point
-            else:
-                logger.debug(
-                    'Point %s,%s already stored.',
-                    raw_point['lat'],
-                    raw_point['lng'],
-                )
+        with watch_location(self.source.user):
+            for raw_point in self.get_points(document):
+                key_name = raw_point['key']
+                if isinstance(self.source.data['known_points'], list):
+                    self.source.data['known_points'] = {}
+                if key_name not in self.source.data['known_points']:
+                    point = self._get_processed_point(raw_point, base_time)
+                    logger.debug(
+                        'Creating point %s,%s at %s.',
+                        point['lat'],
+                        point['lng'],
+                        point['date'],
+                    )
+                    LocationSnapshot.objects.create(
+                        source=self.source,
+                        location=point['point'],
+                        date=point['date'],
+                    )
+                    self.source.data['known_points'][key_name] = raw_point
+                else:
+                    logger.debug(
+                        'Point %s,%s already stored.',
+                        raw_point['lat'],
+                        raw_point['lng'],
+                    )
 
         if route_name:
             self.source.name = '%s (%s)' % (

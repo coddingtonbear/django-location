@@ -13,6 +13,7 @@ from location.models import (
     LocationSourceType
 )
 from location.settings import SETTINGS
+from location.signals import watch_location
 
 
 logger = logging.getLogger(__name__)
@@ -175,20 +176,21 @@ class iCloudConsumer(object):
             )
             return
 
-        source = LocationSource.objects.create(
-            name='Apple iCloud location at %s' % date,
-            type=source_type,
-            user=self.user_settings.user,
-            active=False,
-        )
-        return LocationSnapshot.objects.create(
-            source=source,
-            location=Point(
-                data['longitude'],
-                data['latitude'],
-            ),
-            date=date,
-        )
+        with watch_location(self.user_settings.user):
+            source = LocationSource.objects.create(
+                name='Apple iCloud location at %s' % date,
+                type=source_type,
+                user=self.user_settings.user,
+                active=False,
+            )
+            return LocationSnapshot.objects.create(
+                source=source,
+                location=Point(
+                    data['longitude'],
+                    data['latitude'],
+                ),
+                date=date,
+            )
 
     @classmethod
     def get_source_type(cls):
