@@ -2,4 +2,4 @@ include readme.rst
 include requirements.txt
 recursive-include location/static *
 recursive-include location/templates *
-recursive-include location/tests/files *.kml
+recursive-include location/tests/files *
