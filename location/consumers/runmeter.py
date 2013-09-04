@@ -76,7 +76,7 @@ class RunmeterConsumer(object):
         route_name = self.get_route_name(document)
 
         with watch_location(self.source.user):
-            for raw_point in self.get_points(document):
+            for raw_point in self.get_points(document, base_time):
                 key_name = raw_point['key']
                 if isinstance(self.source.data['known_points'], list):
                     self.source.data['known_points'] = {}
@@ -198,15 +198,16 @@ class RunmeterConsumer(object):
                 logger.info("Found existing source with ID %s.", source.id)
                 break
         if not source:
-            source = LocationSource()
-            source.type = source_type
-            source.name = "Runmeter Route at %s" % datetime.datetime.now()
-            source.data = {
-                'url': url,
-                'known_points': {}
-            }
-            source.active = True
-            source.save()
+            source = LocationSource.objects.create(
+                type=source_type,
+                name="Runmeter Route at %s" % datetime.datetime.now(),
+                data={
+                    'url': url,
+                    'known_points': {}
+                },
+                user=user,
+                active=True,
+            )
             logger.info("Created new source with ID %s.", source.id)
         return source
 

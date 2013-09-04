@@ -166,7 +166,10 @@ class RunmeterTest(BaseTestCase):
         consumer._get_document.assert_called_with(arbitrary_url)
         consumer.get_start_time.assert_called_with(arbitrary_document)
         consumer.get_route_name.assert_called_with(arbitrary_document)
-        consumer.get_points.assert_called_with(arbitrary_document)
+        consumer.get_points.assert_called_with(
+            arbitrary_document,
+            arbitrary_time
+        )
 
         actual_points = models.LocationSnapshot.objects.order_by('date')
         self.assertEqual(actual_points.count(), 2)
@@ -237,7 +240,10 @@ class RunmeterTest(BaseTestCase):
         consumer._get_document.assert_called_with(arbitrary_url)
         consumer.get_start_time.assert_called_with(arbitrary_document)
         consumer.get_route_name.assert_called_with(arbitrary_document)
-        consumer.get_points.assert_called_with(arbitrary_document)
+        consumer.get_points.assert_called_with(
+            arbitrary_document,
+            arbitrary_time
+        )
 
         actual_points = models.LocationSnapshot.objects.order_by('date')
         self.assertEqual(actual_points.count(), 1)
