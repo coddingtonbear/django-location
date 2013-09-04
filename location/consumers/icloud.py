@@ -181,6 +181,7 @@ class iCloudConsumer(object):
                 name='Apple iCloud location at %s' % date,
                 type=source_type,
                 user=self.user_settings.user,
+                data=data,
                 active=False,
             )
             return LocationSnapshot.objects.create(
