@@ -5,6 +5,7 @@ import os.path
 from django.contrib.gis.geos import Point
 from django.utils.timezone import utc
 from django_mailbox.models import Mailbox, Message
+from django_mailbox.signals import message_received
 from lxml import objectify
 from mock import MagicMock, patch
 
@@ -17,15 +18,17 @@ class RunmeterTest(BaseTestCase):
     def setUp(self):
         super(RunmeterTest, self).setUp()
         self.arbitrary_email = 'phlogiston@becker.net'
+        self.arbitrary_mailbox = 'Runmeter Mailbox'
         self.settings = models.LocationConsumerSettings.objects.create(
             user=self.user,
             runmeter_enabled=True,
             runmeter_email=self.arbitrary_email,
         )
         self.mailbox = Mailbox.objects.create(
-            name='My Mailbox',
+            name=self.arbitrary_mailbox,
         )
         self.source_type = RunmeterConsumer.get_source_type()
+        models.SETTINGS['runmeter_mailbox'] = self.arbitrary_mailbox
 
     def _get_sample_document(self):
         file_path = os.path.join(
@@ -318,3 +321,19 @@ class RunmeterTest(BaseTestCase):
             arbitrary_source.pk,
             actual_source.pk,
         )
+
+    @patch.object(RunmeterConsumer, 'process_message')
+    def test_signal_receipt(self, process_message):
+        arbitrary_body = 'OK'
+        ok_message = Message.objects.create(
+            mailbox=self.mailbox,
+            subject='Whatever',
+            from_header=self.arbitrary_email,
+            body=arbitrary_body,
+        )
+        message_received.send(
+            sender=self,
+            message=ok_message
+        )
+
+        process_message.assert_called_with(ok_message)
