@@ -9,8 +9,12 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         for instance in orm.LocationSource.objects.all():
-            instance.user = instance.points.all()[0].user
-            instance.save()
+            try:
+                instance.user = instance.points.all()[0].user
+                instance.save()
+            except IndexError:
+                # No points for this source.
+                instance.delete()
 
     def backwards(self, orm):
         "Write your backwards methods here."
