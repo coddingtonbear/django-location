@@ -5,6 +5,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.core.cache import cache
 from django.dispatch import receiver
+from django_mailbox.signals import message_received
 from jsonfield.fields import JSONField
 
 from location.settings import SETTINGS
@@ -29,14 +30,6 @@ except ImportError:
         "be populated with neighborhood information."
     )
     Neighborhood = None
-try:
-    from django_mailbox.signals import message_received
-except ImportError:
-    logger.warning(
-        "django-mailbox is not installed, cannot consume messages "
-        "from runmeter."
-    )
-    message_received = None
 
 
 class LocationConsumerSettings(models.Model):
@@ -219,16 +212,15 @@ class LocationSnapshot(models.Model):
         )
 
 
-if message_received:
-    @receiver(message_received, dispatch_uid='process_incoming_runmeter_msg')
-    def process_incoming_runmeter_message(sender, message, **kwargs):
-        from location.consumers.runmeter import RunmeterConsumer
-        if message.mailbox.name == SETTINGS['runmeter_mailbox']:
-            try:
-                RunmeterConsumer.process_message(message)
-            except LocationConsumerSettings.DoesNotExist:
-                logger.warning(
-                    'Unable to process message \'%s\': '
-                    'No user is currently assigned to from_address %s',
-                    message.from_address
-                )
+@receiver(message_received, dispatch_uid='process_incoming_runmeter_msg')
+def process_incoming_runmeter_message(sender, message, **kwargs):
+    from location.consumers.runmeter import RunmeterConsumer
+    if message.mailbox.name == SETTINGS['runmeter_mailbox']:
+        try:
+            RunmeterConsumer.process_message(message)
+        except LocationConsumerSettings.DoesNotExist:
+            logger.warning(
+                'Unable to process message \'%s\': '
+                'No user is currently assigned to from_address %s',
+                message.from_address
+            )

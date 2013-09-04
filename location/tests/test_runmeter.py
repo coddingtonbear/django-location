@@ -309,7 +309,9 @@ class RunmeterTest(BaseTestCase):
                 'known_points': {},
             },
         )
-        arbitrary_source.created=datetime.datetime(1970, 1, 1).replace(tzinfo=utc)
+        arbitrary_source.created = datetime.datetime(1970, 1, 1).replace(
+            tzinfo=utc
+        )
         arbitrary_source.save()
 
         actual_source = RunmeterConsumer.get_source_from_user_and_url(
