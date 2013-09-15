@@ -3,7 +3,7 @@ django-social-auth>=0.7.10
 jsonfield>=0.9.18
 lxml>=3.0.1
 pytz
-requests>=1.2
+requests>=1.2.3
 pyicloud_dwoh>=0.3
 django-mailbox>=3.0.1
 Pillow>=1.7.7

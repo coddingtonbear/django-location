@@ -7,6 +7,7 @@ from django.utils.timezone import utc
 from django.db.models import Max
 from lxml import objectify
 import requests
+from requests.adapters import HTTPAdapter
 
 from location.models import (
     LocationConsumerSettings,
@@ -28,6 +29,15 @@ class RunmeterConsumer(object):
 
     def __init__(self, source):
         self.source = source
+        self.session = requests.Session()
+        self.session.mount(
+            'http://',
+            HTTPAdapter(max_retries=5),
+        )
+        self.session.mount(
+            'https://',
+            HTTPAdapter(max_retries=5),
+        )
 
     @classmethod
     def periodic(cls):
@@ -170,7 +180,7 @@ class RunmeterConsumer(object):
 
     def _get_document(self, url):
         return objectify.fromstring(
-            requests.get(url).content
+            self.session.get(url, timeout=10.0).content
         )
 
     @classmethod
