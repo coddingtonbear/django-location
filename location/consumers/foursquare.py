@@ -22,7 +22,7 @@ class FoursquareConsumer(object):
             user = self.get_user()
             source = LocationSource.objects.create(
                 name=self.data['venue']['name'],
-                user=user.user,
+                user=user,
                 type=self.get_source_type(),
                 data=self.data
             )
@@ -47,7 +47,7 @@ class FoursquareConsumer(object):
         return UserSocialAuth.objects.get(
             uid=self.data['user']['id'],
             provider='foursquare',
-        )
+        ).user
 
     @classmethod
     def get_source_type(cls):
