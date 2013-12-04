@@ -202,3 +202,9 @@ API; here's a fleshed-out version::
             'position': '{{ location.location.coords.1 }},{{ location.location.coords.0 }}',
         });
     </script>
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/latestrevision/django-location/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
