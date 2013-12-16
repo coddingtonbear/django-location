@@ -21,12 +21,6 @@ You can either install from pip::
 
     pip install django-location
 
-*or* checkout and install the source from the `bitbucket
-repository <https://bitbucket.org/latestrevision/django-location>`__::
-
-    hg clone https://bitbucket.org/latestrevision/django-location
-    cd django-location
-    python setup.py install
 
 *or* checkout and install the source from the `github
 repository <https://github.com/latestrevision/django-location>`__::
@@ -50,8 +44,8 @@ Each point gathered will also be able to provide to you what
 neighborhood and city it is in if the following two packages are
 installed:
 
--  `django-neighborhoods <http://bitbucket.org/latestrevision/django-neighborhoods/>`__
--  `django-census-places <http://bitbucket.org/latestrevision/django-census-places/>`__
+-  `django-neighborhoods <http://github.com/latestrevision/django-neighborhoods/>`__
+-  `django-census-places <http://github.com/latestrevision/django-census-places/>`__
 
 Location Sources
 ----------------
@@ -117,7 +111,7 @@ from the linked-to KML file.
    notifications to a mailbox accessible by POP3 or IMAP.
 2. Set-up Django Mailbox to consume mail from such a mailbox (consult
    `django-mailbox's
-   documentation <http://bitbucket.org/latestrevision/django-mailbox/>`__).
+   documentation <http://github.com/latestrevision/django-mailbox/>`__).
 3. Update users' Location Consumer Settings record to set the field 
    ``runmeter_email`` to match the e-mail address from which a user's device
    will be sending Runmeter updates.
