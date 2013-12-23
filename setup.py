@@ -6,7 +6,7 @@ with open('requirements.txt', 'r') as in_:
 
 setup(
     name='django-location',
-    version='2.1.0',
+    version='2.1.1',
     url='http://github.com/latestrevision/django-location/',
     description='Gather, store, and display real-time location information from Foursquare, iCloud, and more.',
     author='Adam Coddington',
