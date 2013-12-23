@@ -1,6 +1,6 @@
 import logging
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 from django.contrib.gis import admin
 from django.contrib.messages.api import get_messages
 from django.contrib.sites.models import Site
