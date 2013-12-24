@@ -6,6 +6,8 @@ before_script:
     - sudo apt-get install -qq libgeos-dev libproj-dev postgis
     - createdb -E UTF8 django_location
     - psql -U postgres -d django_location -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
+    - createdb -E UTF8 test_django_location  # For Django 1.4.10
+    - psql -U postgres -d test_django_location -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
 python:
     - "2.6"
     - "2.7"
