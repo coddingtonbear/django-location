@@ -1,8 +1,8 @@
 language: python
 before_script:
     - sudo apt-get update
-    - sudo apt-get remove 
-    - sudo apt-get install -qq libgeos-dev libproj-dev
+    - sudo apt-get remove postgresql-9.1-postgis-scripts
+    - sudo apt-get install -qq libgeos-dev libproj-dev postgresql-9.1-postgis
     - createdb -E UTF8 template_postgis
     - psql -U postgres -d postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
     - psql -U postgres -d template_postgis -f /usr/share/postgresql/9.1/contrib/postgis-1.5/postgis.sql
@@ -15,7 +15,7 @@ python:
     - "2.6"
     - "2.7"
 env:
-    - DJANGO=1.5.1
+    - DJANGO=1.6.1
 install:
     - pip install psycopg2
     - pip install -q Django==$DJANGO --use-mirrors
